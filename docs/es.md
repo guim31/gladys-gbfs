@@ -101,7 +101,7 @@ varias casas, elija la **Casa** alrededor de la cual buscar.
 | Bicis mecánicas      | contador          | solo cuando la red las distingue                 |
 | Bicis eléctricas     | contador          | ídem                                             |
 | Anclajes libres      | contador          | plazas para devolver una bici                    |
-| Estación en servicio | entrada (binaria) | 1 = instalada y en funcionamiento                |
+| Estación en servicio | entrada (binaria) | 1 = instalada (`is_installed`)                   |
 | Préstamo posible     | entrada (binaria) | 1 = se puede tomar una bici                      |
 | Devolución posible   | entrada (binaria) | 1 = se puede devolver una bici                   |
 
@@ -111,7 +111,8 @@ gráfico se ajusta a ella.
 ## Widget del panel
 
 **Estaciones de bici**: elija las estaciones que mostrar (vacío: todas, diez
-como máximo). Cada fila muestra las bicis mecánicas y eléctricas y los
+como máximo). Cada fila muestra las bicis (mecánicas y eléctricas cuando la
+red las distingue) y los
 anclajes libres, en verde, en naranja con dos bicis o menos, en rojo sin
 bicis, en gris fuera de servicio. Con una sola estación cuyo dispositivo está
 creado, el widget muestra mosaicos en directo.

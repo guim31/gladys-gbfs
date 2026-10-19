@@ -45,9 +45,14 @@ function stationsContent(service, { settings, language }) {
     const [station] = shown;
     const network = service.networkOf(station);
     const deviceId = service.stationDeviceId(station);
-    if (network && service.isCreated(deviceId)) {
+    const device = (service.gladys.devices ?? []).find((d) => d.external_id === deviceId);
+    if (network && device) {
       const names = NAMES[language] ?? NAMES.en;
-      const keys = network.info.split ? ['mechanical', 'electric', 'docks'] : ['bikes', 'docks'];
+      // The features of the device as created: a network split later keeps
+      // its old devices until "Update".
+      const has = (key) =>
+        (device.features ?? []).some((f) => f.external_id === `${deviceId}:${key}`);
+      const keys = has('mechanical') ? ['mechanical', 'electric', 'docks'] : ['bikes', 'docks'];
       const components = [{ type: 'text', variant: 'heading', text: clip(station.name, 40) }];
       for (const key of keys) {
         components.push({
@@ -58,7 +63,9 @@ function stationsContent(service, { settings, language }) {
         });
       }
       const status = service.statusOf(station);
-      if (status && (!status.installed || !status.renting)) {
+      if (network.stale(service.config.refreshSeconds)) {
+        components.push({ type: 'text', variant: 'caption', text: t(language, 'stale') });
+      } else if (status && (!status.installed || !status.renting)) {
         components.push({ type: 'text', variant: 'caption', text: t(language, 'closed') });
       }
       return { ttl_seconds: ttl, components };
@@ -81,10 +88,13 @@ function stationsContent(service, { settings, language }) {
           if (!status || !network) {
             return { label, value: '—', color: WIDGET_COLORS.NEUTRAL };
           }
+          if (network.stale(service.config.refreshSeconds)) {
+            return { label, value: t(language, 'stale'), color: WIDGET_COLORS.NEUTRAL };
+          }
           return {
             label,
             value: clip(service.countsText(network, status, language), 40),
-            color: network.error ? WIDGET_COLORS.NEUTRAL : stationColor(status),
+            color: stationColor(status),
           };
         }),
       },

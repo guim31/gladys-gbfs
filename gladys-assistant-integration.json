@@ -755,10 +755,10 @@
             {
               "value": "0",
               "label": {
-                "en": "0 (none left)",
-                "fr": "0 (plus aucun)",
-                "de": "0 (keins mehr)",
-                "es": "0 (ninguno)"
+                "en": "0 (at least one)",
+                "fr": "0 (au moins un)",
+                "de": "0 (mindestens eins)",
+                "es": "0 (al menos uno)"
               }
             },
             {
@@ -1051,10 +1051,10 @@
             {
               "value": "0",
               "label": {
-                "en": "0 (none left)",
-                "fr": "0 (plus aucun)",
-                "de": "0 (keins mehr)",
-                "es": "0 (ninguno)"
+                "en": "0 (at least one)",
+                "fr": "0 (au moins un)",
+                "de": "0 (mindestens eins)",
+                "es": "0 (al menos uno)"
               }
             },
             {

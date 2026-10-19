@@ -99,7 +99,7 @@ them. With several houses, pick the **House** to search around.
 | Mechanical bikes   | counter        | only when the network tells them apart           |
 | Electric bikes     | counter        | idem                                             |
 | Free docks         | counter        | places to return a bike                          |
-| Station in service | input (binary) | 1 = installed and working                        |
+| Station in service | input (binary) | 1 = installed (`is_installed`)                   |
 | Renting open       | input (binary) | 1 = a bike can be taken                          |
 | Returns open       | input (binary) | 1 = a bike can be returned                       |
 
@@ -109,7 +109,8 @@ scaled on it.
 ## Dashboard widget
 
 **Bike stations**: pick the stations to show (empty: all of them, ten at
-most). Each row shows the mechanical and electric bikes and the free docks,
+most). Each row shows the bikes (mechanical and electric when the network
+tells them apart) and the free docks,
 green, orange at two bikes or fewer, red without bikes, grey out of service.
 With a single station whose device is created, the widget shows live tiles
 instead.

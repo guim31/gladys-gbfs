@@ -283,8 +283,8 @@ export class BikeShare {
         this.watch.stations.push({
           network: key,
           id,
-          name: String(device.name ?? id).replace(/^[^·]*· /, ''),
-          shortName: '',
+          name: param(device, 'station_name') || String(device.name ?? id).replace(/^[^·]*· /, ''),
+          shortName: param(device, 'short_name') || '',
           capacity: Number(param(device, 'capacity')) || 0,
         });
         changed = true;
@@ -430,6 +430,12 @@ export class BikeShare {
       await this.save();
       await this.publishDiscovered();
     }
+    // A comparison with a reading hours old (a feed back after an outage)
+    // would fire crossings that are no longer news.
+    const recent =
+      network.previousAt !== null &&
+      network.okAt - network.previousAt <=
+        2 * network.interval(this.config.refreshSeconds) * 1000 + 5000;
     const states = [];
     const events = [];
     for (const station of this.watch.stations.filter((s) => s.network === network.key)) {
@@ -438,11 +444,13 @@ export class BikeShare {
         continue;
       }
       const deviceId = this.stationDeviceId(station);
-      if (this.isCreated(deviceId)) {
-        states.push(...stationStates(this.gladys, station, network.info, status));
+      // Only a created device can be picked by a scene: no events for the others.
+      if (!this.isCreated(deviceId)) {
+        continue;
       }
+      states.push(...stationStates(this.gladys, station, network.info, status));
       const before = previous?.get(station.id);
-      if (before && before !== status) {
+      if (before && before !== status && recent) {
         events.push(...this.thresholdEvents(station, network, deviceId, before, status));
       }
     }
@@ -495,8 +503,15 @@ export class BikeShare {
   async fire(key, data) {
     try {
       await this.gladys.publishSceneEvent(key, data);
+      if (this.fireFailed) {
+        this.fireFailed = false;
+        logger.info('Scene triggers fired again');
+      }
     } catch (err) {
-      logger.warn(`Cannot fire the ${key} trigger: ${err.message}`);
+      if (!this.fireFailed) {
+        logger.warn(`Cannot fire the ${key} trigger: ${err.message}`);
+      }
+      this.fireFailed = true;
     }
   }
 
@@ -561,13 +576,10 @@ export class BikeShare {
       }
       if (found.length > 1) {
         throw new UserError(
-          lines(
-            render(REPORTS, 'ambiguousNetwork', { query: wanted }),
-            found
-              .slice(0, SEARCH_RESULTS)
-              .map((e) => this.networkLine(e, 'en'))
-              .join('\n'),
-          ),
+          perLanguage((language) => [
+            say(REPORTS, language, 'ambiguousNetwork', { query: wanted }),
+            ...found.slice(0, SEARCH_RESULTS).map((e) => this.networkLine(e, language)),
+          ]),
         );
       }
       [entry] = found;
@@ -608,6 +620,11 @@ export class BikeShare {
           });
     }
     info.name = clip(info.name || network.systemName || hostOf(info.url), 40);
+    // Scooters or cars parked at stations (Bird, Citiz…): nothing to count.
+    const kinds = [...network.kinds.values()];
+    if (kinds.length > 0 && !kinds.some((kind) => kind.bicycle)) {
+      throw reportError('noBikes', { name: info.name });
+    }
     // A first reading tells whether the bikes are told apart.
     await network.readStatus().catch(() => {});
     if (existing) {
@@ -773,27 +790,18 @@ export class BikeShare {
     }
     if (found.length === 0) {
       found = searchByName(items, wanted).map(({ item }) => item);
-      if (found.length > 1) {
-        throw new UserError(
-          lines(
-            render(REPORTS, 'ambiguousStation', { query: wanted }),
-            found
-              .slice(0, SEARCH_RESULTS)
-              .map((item) => this.stationLine(item, null, true, 'en'))
-              .join('\n'),
-          ),
-        );
-      }
     }
     if (found.length === 0) {
       throw reportError('noStationMatch', { query: wanted });
     }
     if (found.length > 1) {
       throw new UserError(
-        lines(
-          render(REPORTS, 'ambiguousStation', { query: wanted }),
-          found.map((item) => this.stationLine(item, null, true, 'en')).join('\n'),
-        ),
+        perLanguage((language) => [
+          say(REPORTS, language, 'ambiguousStation', { query: wanted }),
+          ...found
+            .slice(0, SEARCH_RESULTS)
+            .map((item) => this.stationLine(item, null, true, language)),
+        ]),
       );
     }
     return found[0];
@@ -827,14 +835,30 @@ export class BikeShare {
   async remove({ name: query } = {}) {
     const wanted = normalize(query);
     const raw = String(query ?? '').trim();
-    const station = wanted
-      ? this.watch.stations.find(
-          (entry) =>
-            normalize(entry.name) === wanted ||
-            entry.id === raw ||
-            (entry.shortName && entry.shortName === raw),
-        )
-      : null;
+    // The identifier first, then the number, then the name: two networks may
+    // both have a "Gare".
+    let matches = [];
+    for (const test of [
+      (entry) => entry.id === raw,
+      (entry) => entry.shortName && entry.shortName === raw,
+      (entry) => normalize(entry.name) === wanted,
+    ]) {
+      if (wanted && matches.length === 0) {
+        matches = this.watch.stations.filter(test);
+      }
+    }
+    if (matches.length > 1) {
+      throw new UserError(
+        perLanguage((language) => [
+          say(REPORTS, language, 'ambiguousStation', { query: raw }),
+          ...matches.map((entry) => {
+            const network = this.networks.get(entry.network);
+            return `• ${network?.info.name ?? entry.network} · ${entry.name} [${entry.id}]`;
+          }),
+        ]),
+      );
+    }
+    const station = matches[0] ?? null;
     const network =
       wanted && !station
         ? this.watch.networks.find(
@@ -885,13 +909,15 @@ export class BikeShare {
               date: time(network.stationsAt),
             })
           : render(REPORTS, 'stationListMissing'),
-        network.statusAt
-          ? render(REPORTS, 'reading', {
-              age: Math.round((now - network.statusAt) / 1000),
-              interval,
-              volume: megabytesPerHour.toLocaleString(language),
-            })
-          : render(REPORTS, 'readingWaiting'),
+        stations.length === 0
+          ? null
+          : network.statusAt
+            ? render(REPORTS, 'reading', {
+                age: Math.round((now - network.statusAt) / 1000),
+                interval,
+                volume: megabytesPerHour.toLocaleString(language),
+              })
+            : render(REPORTS, 'readingWaiting'),
         render(REPORTS, 'watchedStations', { count: stations.length }),
         stations.length === 0
           ? null
@@ -929,4 +955,11 @@ export class BikeShare {
     const base = say(TEXT, language, network?.info.split ? 'sentenceSplit' : 'sentence', params);
     return status.returning ? base : `${base} ${say(TEXT, language, 'noReturn')}`;
   }
+}
+
+/** A message built line by line in every language: `{ en, fr, de, es }`. */
+function perLanguage(build) {
+  return Object.fromEntries(
+    Object.keys(REPORTS).map((language) => [language, build(language).join('\n')]),
+  );
 }

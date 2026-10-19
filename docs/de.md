@@ -104,7 +104,7 @@ gesucht wird.
 | Mechanische Räder  | Zähler          | nur wenn das Netz sie unterscheidet           |
 | E-Bikes            | Zähler          | ebenso                                        |
 | Freie Stellplätze  | Zähler          | Plätze für die Rückgabe                       |
-| Station in Betrieb | Eingang (binär) | 1 = aufgebaut und in Betrieb                  |
+| Station in Betrieb | Eingang (binär) | 1 = aufgebaut (`is_installed`)                |
 | Ausleihe möglich   | Eingang (binär) | 1 = ein Rad kann ausgeliehen werden           |
 | Rückgabe möglich   | Eingang (binär) | 1 = ein Rad kann zurückgegeben werden         |
 
@@ -114,7 +114,8 @@ Diagramm richtet sich danach.
 ## Dashboard-Widget
 
 **Radstationen**: wähle die anzuzeigenden Stationen (leer: alle, höchstens
-zehn). Jede Zeile zeigt mechanische Räder, E-Bikes und freie Stellplätze,
+zehn). Jede Zeile zeigt die Räder (mechanisch und elektrisch, wenn das Netz
+sie unterscheidet) und die freien Stellplätze,
 grün, orange ab zwei Rädern oder weniger, rot ohne Rad, grau außer Betrieb.
 Mit einer einzigen Station, deren Gerät angelegt ist, zeigt das Widget
 Live-Kacheln.

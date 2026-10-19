@@ -97,6 +97,27 @@ test('free-floating systems, systems with a key and broken feeds are refused', a
   assert.match(refused.en, /publishes no stations \(free-floating/);
   const key = await action(world, 'add_network', { network: 'lime_wetzikon' });
   assert.match(key.fr, /demande une clé d'accès/);
+  // Scooters parked at stations: refused too (Bird publishes 3,000 parking spots).
+  const scooters = 'https://example.org/scooters/gbfs.json';
+  const types = 'https://example.org/scooters/vehicle_types.json';
+  world.network.routes[scooters] = {
+    data: {
+      feeds: [
+        { name: 'station_information', url: feedUrl('velibeo', 'station_information') },
+        { name: 'station_status', url: feedUrl('velibeo', 'station_status') },
+        { name: 'vehicle_types', url: types },
+      ],
+    },
+  };
+  world.network.routes[types] = {
+    data: {
+      vehicle_types: [
+        { vehicle_type_id: 'knot', form_factor: 'scooter', propulsion_type: 'electric' },
+      ],
+    },
+  };
+  const noBikes = await action(world, 'add_network', { network: scooters });
+  assert.match(noBikes.en, /has no bikes \(scooters or cars only\)/);
   const broken = await action(world, 'add_network', { network: 'toulouse' });
   assert.match(broken.en, /VélÔToulouse cannot be read \(api\.cyclocity\.fr: HTTP 404\)/);
   assert.deepEqual(world.service.watch.networks, []);
@@ -191,6 +212,8 @@ test('an ambiguous station name lists the candidates', async (t) => {
   const message = await action(world, 'add_station', { station: 'Rivoli' });
   assert.match(message.en, /Several stations match "Rivoli"/);
   assert.match(message.en, /Archives - Rivoli \[128880156\]/);
+  assert.match(message.fr, /Plusieurs stations correspondent/);
+  assert.match(message.fr, /Archives - Rivoli \[128880156\] — 14 méca · 6 élec · 4 places/);
 });
 
 test('creating the device publishes all its states at once, and nudges the widget', async (t) => {
@@ -305,6 +328,7 @@ test('a reading publishes only the changes, and fires the thresholds crossed', a
 
 test('a network without split fires only the "any bike" thresholds', async (t) => {
   const world = await watching(t, { networks: ['nantes'], station: '1' });
+  await create(world, 'Préfecture');
   setStatus(world, 'nantes', '1', {
     num_vehicles_available: 0,
     vehicle_types_available: [{ vehicle_type_id: 'mechanical', count: 0 }],
@@ -314,6 +338,34 @@ test('a network without split fires only the "any bike" thresholds', async (t) =
     world.fake.sceneEvents.map(({ key, data }) => `${key}/${data.bike_type}/${data.threshold}`),
     ['bikes_low/any/0', 'bikes_low/any/1', 'bikes_low/any/2', 'bikes_low/any/3'],
   );
+});
+
+test('no events for a station without device, nor after a long outage', async (t) => {
+  const world = await watching(t, { networks: ['nantes'], station: '1' });
+  setStatus(world, 'nantes', '1', { num_vehicles_available: 0, vehicle_types_available: [] });
+  await cycle(world, 60);
+  assert.deepEqual(world.fake.sceneEvents, []);
+  await create(world, 'Préfecture');
+  const url = statusUrl('nantes');
+  const saved = world.network.routes[url];
+  world.network.routes[url] = 500;
+  for (let i = 0; i < 10; i += 1) {
+    await cycle(world, 60);
+  }
+  world.network.routes[url] = saved;
+  setStatus(world, 'nantes', '1', {
+    num_vehicles_available: 9,
+    vehicle_types_available: [{ vehicle_type_id: 'mechanical', count: 9 }],
+  });
+  await cycle(world, 60);
+  assert.deepEqual(world.fake.sceneEvents, []);
+  await cycle(world, 60);
+  setStatus(world, 'nantes', '1', {
+    num_vehicles_available: 0,
+    vehicle_types_available: [{ vehicle_type_id: 'mechanical', count: 0 }],
+  });
+  await cycle(world, 60);
+  assert.ok(world.fake.sceneEvents.length > 0, 'a recent comparison fires again');
 });
 
 test('a station closed: its flags drop to 0', async (t) => {
@@ -396,7 +448,7 @@ test('status: networks, list, pace, volume, stations', async (t) => {
   assert.equal(lines[0], '1 network(s) added.');
   assert.equal(lines[1], "■ Vélib' Metropole [paris] · GBFS 1.0");
   assert.match(lines[2], /^Station list: 11 stations, read on /);
-  assert.match(lines[3], /^Last reading 0 s ago, every 300 s \(about 0 MB per hour\)\.$/);
+  assert.match(lines[3], /^Last reading 0 s ago, every 300 s \(up to 0 MB per hour\)\.$/);
   assert.equal(lines[4], '1 station(s) watched:');
   assert.equal(
     lines[5],
@@ -415,6 +467,19 @@ test('remove a station, then a network with its stations and its cache', async (
   assert.match(network.en, /^Naolib removed, with its 1 station\(s\)/);
   assert.equal(world.fake.discoveredDevices.length, 0);
   await assert.rejects(readFile(join(world.dataDir, 'stations-nantes.json')));
+  // Two stations of the same name: the identifier decides.
+  world.service.watch.stations.push(
+    { network: 'paris', id: 'a', name: 'Gare', shortName: '' },
+    { network: 'paris', id: 'b', name: 'Gare', shortName: '' },
+  );
+  const ambiguous = await action(world, 'remove', { name: 'Gare' });
+  assert.match(ambiguous.en, /Several stations match "Gare"/);
+  const byId = await action(world, 'remove', { name: 'b' });
+  assert.match(byId.en, /^Gare is no longer watched/);
+  assert.deepEqual(
+    world.service.watch.stations.map((s) => s.id),
+    ['a'],
+  );
   const unknown = await action(world, 'remove', { name: 'Atlantis' });
   assert.match(unknown.en, /No watched station or network is called "Atlantis"/);
 });

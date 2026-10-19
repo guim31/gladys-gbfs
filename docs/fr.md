@@ -104,7 +104,7 @@ chercher.
 | Vélos mécaniques   | compteur         | seulement quand le réseau les distingue                 |
 | Vélos électriques  | compteur         | idem                                                    |
 | Places libres      | compteur         | places pour rendre un vélo                              |
-| Station en service | entrée (binaire) | 1 = installée et en fonctionnement                      |
+| Station en service | entrée (binaire) | 1 = installée (`is_installed`)                          |
 | Location possible  | entrée (binaire) | 1 = on peut prendre un vélo                             |
 | Retour possible    | entrée (binaire) | 1 = on peut rendre un vélo                              |
 
@@ -114,7 +114,8 @@ graphique s'y cale.
 ## Widget du tableau de bord
 
 **Stations vélo** : choisissez les stations à afficher (vide : toutes, dix au
-plus). Chaque ligne affiche les vélos mécaniques et électriques et les places
+plus). Chaque ligne affiche les vélos (mécaniques et électriques quand le
+réseau les distingue) et les places
 libres, en vert, en orange à deux vélos ou moins, en rouge sans vélo, en gris
 hors service. Avec une seule station dont l'appareil est créé, le widget
 affiche des tuiles en direct.

@@ -23,7 +23,8 @@ export const SCENE_ACTIONS = {
       throw new SceneError(say(TEXT, language, 'gone'));
     }
     const status = service.statusOf(station);
-    if (!status) {
+    // A reading hours old (feed down) is not presented as the current one.
+    if (!status || service.networkOf(station).stale(service.config.refreshSeconds)) {
       throw new SceneError(say(TEXT, language, 'unavailable'));
     }
     return {

@@ -56,9 +56,10 @@ export const NAMES = {
 export const TEXT = {
   en: {
     closed: 'out of service',
-    counts: ({ bikes, docks }) => `${bikes} bikes · ${docks} docks`,
+    counts: ({ bikes, docks }) =>
+      `${bikes} bike${bikes === 1 ? '' : 's'} · ${docks} dock${docks === 1 ? '' : 's'}`,
     countsSplit: ({ mechanical, electric, docks }) =>
-      `${mechanical} mech. · ${electric} elec. · ${docks} docks`,
+      `${mechanical} mech. · ${electric} elec. · ${docks} dock${docks === 1 ? '' : 's'}`,
     sentence: ({ name, bikes, docks }) =>
       `${name}: ${bikes} bike${bikes === 1 ? '' : 's'}, ${docks} free dock${docks === 1 ? '' : 's'}.`,
     sentenceSplit: ({ name, bikes, mechanical, electric, docks }) =>
@@ -73,9 +74,10 @@ export const TEXT = {
   },
   fr: {
     closed: 'hors service',
-    counts: ({ bikes, docks }) => `${bikes} vélos · ${docks} places`,
+    counts: ({ bikes, docks }) =>
+      `${bikes} vélo${bikes > 1 ? 's' : ''} · ${docks} place${docks > 1 ? 's' : ''}`,
     countsSplit: ({ mechanical, electric, docks }) =>
-      `${mechanical} méca · ${electric} élec · ${docks} places`,
+      `${mechanical} méca · ${electric} élec · ${docks} place${docks > 1 ? 's' : ''}`,
     sentence: ({ name, bikes, docks }) =>
       `${name} : ${bikes} vélo${bikes > 1 ? 's' : ''}, ${docks} place${docks > 1 ? 's' : ''} libre${docks > 1 ? 's' : ''}.`,
     sentenceSplit: ({ name, bikes, mechanical, electric, docks }) =>
@@ -90,9 +92,10 @@ export const TEXT = {
   },
   de: {
     closed: 'außer Betrieb',
-    counts: ({ bikes, docks }) => `${bikes} Räder · ${docks} Plätze`,
+    counts: ({ bikes, docks }) =>
+      `${bikes} ${bikes === 1 ? 'Rad' : 'Räder'} · ${docks} ${docks === 1 ? 'Platz' : 'Plätze'}`,
     countsSplit: ({ mechanical, electric, docks }) =>
-      `${mechanical} mech. · ${electric} E · ${docks} Plätze`,
+      `${mechanical} mech. · ${electric} E · ${docks} ${docks === 1 ? 'Platz' : 'Plätze'}`,
     sentence: ({ name, bikes, docks }) =>
       `${name}: ${bikes} ${bikes === 1 ? 'Rad' : 'Räder'}, ${docks} freie${docks === 1 ? 'r' : ''} Stellpl${docks === 1 ? 'atz' : 'ätze'}.`,
     sentenceSplit: ({ name, bikes, mechanical, electric, docks }) =>
@@ -107,9 +110,10 @@ export const TEXT = {
   },
   es: {
     closed: 'fuera de servicio',
-    counts: ({ bikes, docks }) => `${bikes} bicis · ${docks} anclajes`,
+    counts: ({ bikes, docks }) =>
+      `${bikes} bici${bikes === 1 ? '' : 's'} · ${docks} anclaje${docks === 1 ? '' : 's'}`,
     countsSplit: ({ mechanical, electric, docks }) =>
-      `${mechanical} mec. · ${electric} eléc. · ${docks} anclajes`,
+      `${mechanical} mec. · ${electric} eléc. · ${docks} anclaje${docks === 1 ? '' : 's'}`,
     sentence: ({ name, bikes, docks }) =>
       `${name}: ${bikes} bici${bikes === 1 ? '' : 's'}, ${docks} anclaje${docks === 1 ? '' : 's'} libre${docks === 1 ? '' : 's'}.`,
     sentenceSplit: ({ name, bikes, mechanical, electric, docks }) =>
@@ -138,6 +142,7 @@ export const REPORTS = {
     keyRefused: ({ name }) => `${name} requires an access key: not supported.`,
     networkKnown: ({ name }) => `${name} is already added.`,
     tooManyNetworks: ({ max }) => `${max} networks at most: remove one first.`,
+    noBikes: ({ name }) => `${name} has no bikes (scooters or cars only): not supported.`,
     noStations: ({ name }) =>
       `${name} publishes no stations (free-floating bikes or scooters): not supported.`,
     networkFailed: ({ name, reason }) => `${name} cannot be read (${reason}).`,
@@ -166,7 +171,7 @@ export const REPORTS = {
     stationList: ({ count, date }) => `Station list: ${count} stations, read on ${date}.`,
     stationListMissing: 'Station list not read yet.',
     reading: ({ age, interval, volume }) =>
-      `Last reading ${age} s ago, every ${interval} s (about ${volume} MB per hour).`,
+      `Last reading ${age} s ago, every ${interval} s (up to ${volume} MB per hour).`,
     readingWaiting: 'No reading yet.',
     watchedStations: ({ count }) => `${count} station(s) watched:`,
     lastError: ({ error }) => `Last error: ${error}`,
@@ -184,6 +189,8 @@ export const REPORTS = {
     keyRefused: ({ name }) => `${name} demande une clé d'accès : non pris en charge.`,
     networkKnown: ({ name }) => `${name} est déjà ajouté.`,
     tooManyNetworks: ({ max }) => `${max} réseaux au plus : retirez-en un d'abord.`,
+    noBikes: ({ name }) =>
+      `${name} n'a pas de vélos (trottinettes ou voitures seulement) : non pris en charge.`,
     noStations: ({ name }) =>
       `${name} ne publie pas de stations (vélos ou trottinettes en free-floating) : non pris en charge.`,
     networkFailed: ({ name, reason }) => `${name} est illisible (${reason}).`,
@@ -215,7 +222,7 @@ export const REPORTS = {
     stationList: ({ count, date }) => `Liste des stations : ${count} stations, lue le ${date}.`,
     stationListMissing: 'Liste des stations pas encore lue.',
     reading: ({ age, interval, volume }) =>
-      `Dernière lecture il y a ${age} s, toutes les ${interval} s (environ ${volume} Mo par heure).`,
+      `Dernière lecture il y a ${age} s, toutes les ${interval} s (jusqu'à ${volume} Mo par heure).`,
     readingWaiting: 'Aucune lecture pour le moment.',
     watchedStations: ({ count }) => `${count} station(s) surveillée(s) :`,
     lastError: ({ error }) => `Dernière erreur : ${error}`,
@@ -233,6 +240,7 @@ export const REPORTS = {
     keyRefused: ({ name }) => `${name} verlangt einen Zugangsschlüssel: nicht unterstützt.`,
     networkKnown: ({ name }) => `${name} ist schon hinzugefügt.`,
     tooManyNetworks: ({ max }) => `Höchstens ${max} Netze: entferne zuerst eines.`,
+    noBikes: ({ name }) => `${name} hat keine Räder (nur Roller oder Autos): nicht unterstützt.`,
     noStations: ({ name }) =>
       `${name} veröffentlicht keine Stationen (Free-Floating-Räder oder -Roller): nicht unterstützt.`,
     networkFailed: ({ name, reason }) => `${name} ist nicht lesbar (${reason}).`,
@@ -262,7 +270,7 @@ export const REPORTS = {
     stationList: ({ count, date }) => `Stationsliste: ${count} Stationen, gelesen am ${date}.`,
     stationListMissing: 'Stationsliste noch nicht gelesen.',
     reading: ({ age, interval, volume }) =>
-      `Letzte Abfrage vor ${age} s, alle ${interval} s (etwa ${volume} MB pro Stunde).`,
+      `Letzte Abfrage vor ${age} s, alle ${interval} s (bis zu ${volume} MB pro Stunde).`,
     readingWaiting: 'Noch keine Abfrage.',
     watchedStations: ({ count }) => `${count} Station(en) überwacht:`,
     lastError: ({ error }) => `Letzter Fehler: ${error}`,
@@ -280,6 +288,7 @@ export const REPORTS = {
     keyRefused: ({ name }) => `${name} requiere una clave de acceso: no compatible.`,
     networkKnown: ({ name }) => `${name} ya está añadida.`,
     tooManyNetworks: ({ max }) => `${max} redes como máximo: quite una primero.`,
+    noBikes: ({ name }) => `${name} no tiene bicis (solo patinetes o coches): no compatible.`,
     noStations: ({ name }) =>
       `${name} no publica estaciones (bicis o patinetes sin base fija): no compatible.`,
     networkFailed: ({ name, reason }) => `${name} no se puede leer (${reason}).`,
@@ -309,7 +318,7 @@ export const REPORTS = {
     stationList: ({ count, date }) => `Lista de estaciones: ${count} estaciones, leída el ${date}.`,
     stationListMissing: 'Lista de estaciones aún no leída.',
     reading: ({ age, interval, volume }) =>
-      `Última lectura hace ${age} s, cada ${interval} s (unos ${volume} MB por hora).`,
+      `Última lectura hace ${age} s, cada ${interval} s (hasta ${volume} MB por hora).`,
     readingWaiting: 'Aún ninguna lectura.',
     watchedStations: ({ count }) => `${count} estación(es) vigilada(s):`,
     lastError: ({ error }) => `Último error: ${error}`,

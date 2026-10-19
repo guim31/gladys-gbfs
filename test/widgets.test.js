@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { WIDGET_COLORS, validateWidgetContent } from '@gladysassistant/integration-sdk';
-import { action, create, createWorld, cycle, setStatus } from './helpers/world.js';
+import { action, create, createWorld, cycle, feedUrl, setStatus } from './helpers/world.js';
 
 const GODARD = '213688169';
 
@@ -125,4 +125,23 @@ test('the scene action: a sentence and numbers, in the configured language', asy
   const gone = await w.fake.sceneAction('get_station', { station: 'ext:nothing' });
   assert.equal(gone.success, false);
   assert.match(gone.error, /plus surveillée/);
+});
+
+test('a feed down for long: the widget and the scene action do not show old values', async (t) => {
+  const w = await world(t, ['nantes']);
+  await action(w, 'add_station', { station: '1' });
+  await action(w, 'add_station', { station: '3' });
+  const prefecture = await create(w, 'Préfecture');
+  w.network.routes[feedUrl('nantes', 'station_status')] = 503;
+  for (let i = 0; i < 4; i += 1) {
+    await cycle(w, 400);
+  }
+  const content = await widget(w);
+  assert.deepEqual(
+    content.components[0].items.map((item) => item.value),
+    ['flux indisponible', 'flux indisponible'],
+  );
+  const read = await w.fake.sceneAction('get_station', { station: prefecture.external_id });
+  assert.equal(read.success, false);
+  assert.match(read.error, /pas encore été lue/);
 });

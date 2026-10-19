@@ -107,6 +107,8 @@ export function buildStationDevice(gladys, station, network, language) {
       { name: 'network_name', value: network.name },
       { name: 'gbfs_url', value: network.url },
       { name: 'station_id', value: station.id },
+      { name: 'station_name', value: station.name },
+      { name: 'short_name', value: station.shortName ?? '' },
       { name: 'capacity', value: String(station.capacity ?? 0) },
     ],
     features,
