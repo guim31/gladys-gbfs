@@ -1,0 +1,210 @@
+# Bicis compartidas (GBFS)
+
+Las **bicis disponibles** y los **anclajes libres** de sus estaciones de bici
+compartida, para **cualquier red** que publique sus datos en el estándar
+abierto **GBFS** (General Bikeshare Feed Specification, versiones 1.0 a 3.0):
+Vélib' Métropole (París), Vélo'v (Lyon), Naolib (Nantes), V'lille,
+VélôToulouse, Villo! (Bruselas), Citi Bike (Nueva York), BiciMAD (Madrid) y
+alrededor de mil más, recogidas en el catálogo oficial de MobilityData. **Sin
+cuenta ni clave.**
+
+Una ciudad con su propia integración de Gladys quizá esté mejor servida por
+ella: Tisséo (Toulouse, VélôToulouse incluido), Le Vélo (Burdeos), STM
+(Montreal, BIXI incluido), TCL (Lyon). Esta es el complemento genérico, para
+todas las demás redes.
+
+Esta integración es un proyecto comunitario, sin relación con MobilityData ni
+con ningún operador de bicis compartidas. Se ha probado con los flujos reales
+de cinco redes, aún en pocas instalaciones de Gladys: sus comentarios son
+bienvenidos.
+
+## Lo que obtiene
+
+- **Un dispositivo por estación vigilada**: bicis disponibles, bicis
+  mecánicas y eléctricas (cuando la red las distingue), anclajes libres, y si
+  la estación está en servicio, permite tomar una bici y permite devolverla.
+- **Widget «Estaciones de bici»**: sus estaciones como un panel de salidas, o
+  mosaicos en directo para una sola estación.
+- **Cuatro disparadores de escena**: bicis que se agotan, bicis de vuelta,
+  anclajes que se agotan, anclajes libres de nuevo, con el número que elija.
+- **Acción de escena «Leer una estación de bici»**, con una frase lista para
+  enviar («Préfecture: 4 bicis, 29 anclajes libres.»).
+- Hasta **5 redes** y **30 estaciones**.
+
+## Requisitos
+
+- Gladys Assistant **5.2.0** o posterior.
+- Acceso a Internet desde la máquina de Gladys (los flujos están en línea).
+- Para la búsqueda alrededor de su casa: la **posición de su casa** indicada
+  en Gladys (Ajustes → Casas). La integración la solicita al instalarse.
+
+## Instalación
+
+1. En Gladys, abra **Integraciones → Instalar desde GitHub**.
+2. Introduzca `https://github.com/guim31/gladys-gbfs`.
+3. Acepte el acceso solicitado (la posición de sus casas, usada solo para
+   encontrar las estaciones más cercanas).
+
+## Configuración
+
+### Ajustes
+
+- **Idioma de los textos**: nombres de las funciones, de las estaciones
+  (cuando la red los traduce) y frases enviadas a las escenas. Los nombres de
+  las funciones se fijan al crear el dispositivo.
+- **Intervalo de actualización**: 1, 2, 5 o 10 minutos. La integración nunca
+  lee una red más rápido de lo que permite su `ttl` (hasta 5 minutos, véase
+  «Datos, actualización y volumen»).
+
+### Añadir una red
+
+1. Ejecute **Buscar una red** con un nombre de red, una ciudad o un código de
+   país (`Vélib'`, `Lyon`, `BE`). Cada resultado muestra su identificador
+   entre corchetes, por ejemplo `Vélib' Metropole — Paris, FR [Paris] · GBFS 1.0`.
+2. Ejecute **Añadir una red** con ese identificador (o el nombre exacto). La
+   integración lee la lista de estaciones y le indica cuántas ha encontrado y
+   si distingue bicis mecánicas y eléctricas.
+
+Una red ausente del catálogo: indique la URL de su `gbfs.json`. El catálogo
+también recoge patinetes, coches y bicis sin base fija: solo se pueden añadir
+los sistemas **con estaciones**, y los que requieren una clave de acceso no
+son compatibles.
+
+### Añadir una estación
+
+1. Ejecute **Buscar una estación**: vacía, muestra las diez estaciones más
+   cercanas a su casa, con su distancia y sus bicis del momento; con un
+   nombre o un número de estación (los números de Vélib' como `16107`
+   funcionan), las estaciones que coinciden.
+2. Ejecute **Añadir una estación** con el identificador entre corchetes.
+3. Abra la pestaña **Descubrir** de la integración y cree el dispositivo.
+
+Con varias redes, rellene el campo **Red** para buscar solo en una. Con
+varias casas, elija la **Casa** alrededor de la cual buscar.
+
+### Quitar, comprobar los flujos
+
+- **Quitar** deja de vigilar una estación (por nombre o identificador) o toda
+  una red con sus estaciones. Los dispositivos quedan en Gladys hasta que los
+  elimine.
+- **Estado** muestra cada red: su versión GBFS, su lista de estaciones, la
+  antigüedad de la última lectura, el ritmo, el volumen descargado por hora,
+  las estaciones vigiladas y el último error.
+
+## Dispositivos
+
+### Estación
+
+| Función              | Tipo              | Significado                                      |
+| -------------------- | ----------------- | ------------------------------------------------ |
+| Bicis disponibles    | contador          | bicis que se pueden tomar (sin contar patinetes) |
+| Bicis mecánicas      | contador          | solo cuando la red las distingue                 |
+| Bicis eléctricas     | contador          | ídem                                             |
+| Anclajes libres      | contador          | plazas para devolver una bici                    |
+| Estación en servicio | entrada (binaria) | 1 = instalada y en funcionamiento                |
+| Préstamo posible     | entrada (binaria) | 1 = se puede tomar una bici                      |
+| Devolución posible   | entrada (binaria) | 1 = se puede devolver una bici                   |
+
+Los contadores van de 0 a la capacidad de la estación: un indicador o un
+gráfico se ajusta a ella.
+
+## Widget del panel
+
+**Estaciones de bici**: elija las estaciones que mostrar (vacío: todas, diez
+como máximo). Cada fila muestra las bicis mecánicas y eléctricas y los
+anclajes libres, en verde, en naranja con dos bicis o menos, en rojo sin
+bicis, en gris fuera de servicio. Con una sola estación cuyo dispositivo está
+creado, el widget muestra mosaicos en directo.
+
+## Disparadores de escena
+
+- **Bicis que se agotan en una estación**: las bicis (todas, mecánicas o
+  eléctricas) bajan al número elegido o por debajo (0, 1, 2, 3, 5 o 10).
+- **Bicis de vuelta en una estación**: vuelven a superar el número elegido.
+- **Anclajes que se agotan**: los anclajes libres bajan al número elegido o
+  por debajo.
+- **Anclajes libres de nuevo**: vuelven a superarlo.
+
+Cada disparador transmite a la escena el nombre de la estación, las bicis
+(todas, mecánicas, eléctricas) y los anclajes libres en ese momento. Los
+umbrales de bicis mecánicas y eléctricas solo se disparan en las redes que
+las distinguen.
+
+## Acción de escena
+
+**Leer una estación de bici** devuelve una frase lista para un mensaje o un
+altavoz («Benjamin Godard - Victor Hugo: 25 bicis (21 mecánicas, 4
+eléctricas), 10 anclajes libres.»), y números utilizables en un paso
+«Continuar solo si»: bicis, mecánicas, eléctricas, anclajes, préstamo (1/0),
+devolución (1/0).
+
+## Ejemplos de escenas
+
+- **Antes de ir a trabajar**: a las 8:00 entre semana, leer la estación de
+  su calle y enviar la frase por Telegram.
+- **Sin bicis eléctricas**: «Bicis que se agotan», bicis eléctricas, como
+  máximo 0, en su estación habitual: una notificación, para salir un poco
+  antes.
+- **La vuelta por la tarde**: «Anclajes que se agotan», como máximo 2, en la
+  estación cerca de la oficina: estar avisado antes de ir.
+
+## Datos, actualización y volumen
+
+- El **catálogo** de redes (`systems.csv` de MobilityData, 180 kB) solo se
+  lee para una búsqueda o una adición, y se guarda un día.
+- La **lista de estaciones** de cada red se lee al añadirla, luego como
+  máximo una vez al día, y se guarda en el volumen `/data` de la integración.
+- El **estado de las estaciones** se lee con el intervalo elegido, un minuto
+  como mínimo, nunca más rápido que el `ttl` que anuncia la red. Un `ttl` de
+  más de cinco minutos se limita: Vélib' anuncia una hora para datos
+  actualizados cada minuto, se lee cada 5 minutos. Cuando el servidor lo
+  permite, un flujo sin cambios no se descarga de nuevo.
+- Volumen: de unos kB por lectura (redes pequeñas) a cerca de 1 MB (Citi
+  Bike); Vélib' pesa unos 460 kB por lectura. La acción **Estado** muestra el
+  volumen por hora de sus redes.
+- A un servidor que responde «429 Too Many Requests» o «503» se le deja en
+  paz el tiempo que pide.
+- Los datos pertenecen a cada operador y se publican bajo su propia licencia
+  (a menudo ODbL o una licencia abierta): compruébela antes de reutilizarlos
+  en otro lugar.
+
+## Solución de problemas
+
+- **«no publica estaciones»**: el sistema funciona sin base fija (bicis o
+  patinetes aparcados en cualquier sitio): no tiene estaciones que vigilar.
+- **«no se puede leer (… HTTP 404)»**: el operador ha movido sus flujos.
+  Busque de nuevo la red, o indique la URL actual de su `gbfs.json`.
+- **Sin funciones de bicis mecánicas/eléctricas**: la red no las distingue en
+  su flujo (Naolib, V'lille…), o solo tiene bicis eléctricas.
+- **Un dispositivo muestra valores antiguos**: ejecute **Estado**; el último
+  error explica por qué. Los estados vuelven solos en cuanto el flujo
+  responde.
+- **La búsqueda alrededor de su casa está vacía**: indique la posición de su
+  casa en Gladys, o busque por nombre.
+- **`docker logs`**: discreto por defecto; ponga `LOG_LEVEL=debug` para ver
+  cada lectura.
+
+## Limitaciones
+
+- Solo estaciones: los vehículos sin base fija (`free_bike_status`,
+  `vehicle_status`) no se leen.
+- Los flujos que requieren una clave o un token no son compatibles.
+- Los nombres y la lista de funciones se fijan al crear el dispositivo: una
+  red que empiece a distinguir las bicis más tarde propone «Actualizar» en la
+  pestaña Descubrir.
+- Hasta 5 redes y 30 estaciones, diez filas en el widget.
+- La calidad de los datos es la del operador: algunas redes solo actualizan
+  su flujo cada pocos minutos.
+
+## Créditos
+
+- [GBFS](https://github.com/MobilityData/gbfs) y su catálogo de sistemas:
+  MobilityData y los colaboradores de GBFS (Apache 2.0 para la
+  especificación).
+- Mismo uso que la plataforma `citybikes` de Home Assistant y la integración
+  `gbfs` de HACS; no se ha tomado código de ellas. Las estaciones de bici de
+  la integración Tisséo fueron el primer borrador.
+- Fixtures de prueba: flujos reales de Vélib' Métropole, Naolib, V'lille,
+  Vélibéo y Citi Bike, reducidos a unas pocas estaciones.
+- Datos de las estaciones: cada operador de red (Smovengo para Vélib',
+  JCDecaux, Ilévia, Lyft, Ecovélo…).

@@ -1,177 +1,1276 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Vélos en libre-service (GBFS)",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Bikes and free docks at your bike sharing stations: Vélib', Citi Bike, Villo!… (GBFS open data).",
+    "fr": "Vélos et places libres de vos stations en libre-service : Vélib', Vélo'v, V'Lille… (données GBFS).",
+    "de": "Räder und freie Plätze deiner Leihrad-Stationen: Vélib', Citi Bike, Villo!… (offene GBFS-Daten).",
+    "es": "Bicis y anclajes libres de sus estaciones de bici compartida: BiciMAD, Vélib'… (datos GBFS)."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
-  "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "docker_image": "ghcr.io/guim31/gladys-gbfs:1.0.0",
+  "gladys_version": ">=5.2.0",
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-gbfs/main/cover.png",
+  "categories": ["services"],
+  "transports": ["cloud"],
+  "location": true,
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "How it works",
+        "fr": "Fonctionnement",
+        "de": "So funktioniert es",
+        "es": "Funcionamiento"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Add your network with the actions below (search the GBFS catalog of MobilityData, or give the URL of its gbfs.json), then your stations (by name, or around your home), and create their devices in the Discover tab. No account, no key.",
+        "fr": "Ajoutez votre réseau avec les actions ci-dessous (recherche dans le catalogue GBFS de MobilityData, ou adresse de son gbfs.json), puis vos stations (par nom, ou autour de la maison), et créez leurs appareils dans l'onglet Découverte. Sans compte ni clé.",
+        "de": "Füge mit den Aktionen unten dein Netz hinzu (Suche im GBFS-Katalog von MobilityData oder Adresse seiner gbfs.json), dann deine Stationen (nach Name oder rund um dein Zuhause), und lege ihre Geräte im Tab „Entdecken“ an. Kein Konto, kein Schlüssel.",
+        "es": "Añada su red con las acciones de abajo (búsqueda en el catálogo GBFS de MobilityData, o dirección de su gbfs.json), luego sus estaciones (por nombre, o alrededor de su casa), y cree sus dispositivos en la pestaña Descubrir. Sin cuenta ni clave."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/guim31/gladys-gbfs/blob/main/docs/en.md",
+          "label": {
+            "en": "Setup guide",
+            "fr": "Guide de configuration",
+            "de": "Einrichtungsanleitung",
+            "es": "Guía de configuración"
+          }
+        },
+        {
+          "url": "https://github.com/MobilityData/gbfs/blob/master/systems.csv",
+          "label": {
+            "en": "GBFS networks catalog",
+            "fr": "Catalogue des réseaux GBFS",
+            "de": "Katalog der GBFS-Netze",
+            "es": "Catálogo de redes GBFS"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
-    },
-    {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
+      "key": "language",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "label": {
+        "en": "Language of the texts",
+        "fr": "Langue des textes",
+        "de": "Sprache der Texte",
+        "es": "Idioma de los textos"
+      },
+      "description": {
+        "en": "Language of the feature names, of the station names (when the network translates them) and of the sentences sent to your scenes. Feature names are set when a device is created.",
+        "fr": "Langue des noms de fonctionnalités, des noms de stations (quand le réseau les traduit) et des phrases envoyées à vos scènes. Les noms de fonctionnalités sont fixés à la création de l'appareil.",
+        "de": "Sprache der Funktionsnamen, der Stationsnamen (wenn das Netz sie übersetzt) und der Sätze für deine Szenen. Funktionsnamen werden beim Anlegen des Geräts festgelegt.",
+        "es": "Idioma de los nombres de las funciones, de las estaciones (cuando la red los traduce) y de las frases enviadas a sus escenas. Los nombres de las funciones se fijan al crear el dispositivo."
+      },
       "required": false,
-      "default": "celsius",
+      "default": "fr",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "refresh_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Fréquence de mise à jour",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "How often the stations are read. Never faster than the network allows (its ttl, up to 5 minutes). A big network weighs up to 1 MB per reading (Citi Bike: about 60 MB per hour at 1 minute); the Status action shows yours.",
+        "fr": "Fréquence de lecture des stations. Jamais plus vite que ce que permet le réseau (son ttl, jusqu'à 5 minutes). Un gros réseau pèse jusqu'à 1 Mo par lecture (Citi Bike : environ 60 Mo par heure à 1 minute) ; l'action « État » affiche le vôtre.",
+        "de": "Wie oft die Stationen gelesen werden. Nie schneller, als das Netz erlaubt (sein ttl, bis zu 5 Minuten). Ein großes Netz wiegt bis zu 1 MB pro Abfrage (Citi Bike: etwa 60 MB pro Stunde bei 1 Minute); die Aktion „Status“ zeigt deines.",
+        "es": "Frecuencia de lectura de las estaciones. Nunca más rápido de lo que permite la red (su ttl, hasta 5 minutos). Una red grande pesa hasta 1 MB por lectura (Citi Bike: unos 60 MB por hora a 1 minuto); la acción «Estado» muestra la suya."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "60",
+      "options": [
+        {
+          "value": "60",
+          "label": {
+            "en": "1 minute",
+            "fr": "1 minute",
+            "de": "1 Minute",
+            "es": "1 minuto"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "2 minutes",
+            "fr": "2 minutes",
+            "de": "2 Minuten",
+            "es": "2 minutos"
+          }
+        },
+        {
+          "value": "300",
+          "label": {
+            "en": "5 minutes",
+            "fr": "5 minutes",
+            "de": "5 Minuten",
+            "es": "5 minutos"
+          }
+        },
+        {
+          "value": "600",
+          "label": {
+            "en": "10 minutes",
+            "fr": "10 minutes",
+            "de": "10 Minuten",
+            "es": "10 minutos"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
-      "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
+      "key": "search_networks",
+      "label": {
+        "en": "Find a network",
+        "fr": "Chercher un réseau",
+        "de": "Netz suchen",
+        "es": "Buscar una red"
+      },
+      "description": {
+        "en": "Searches the GBFS catalog of MobilityData: about 1,200 shared mobility systems worldwide.",
+        "fr": "Cherche dans le catalogue GBFS de MobilityData : environ 1 200 systèmes de mobilité partagée dans le monde.",
+        "de": "Sucht im GBFS-Katalog von MobilityData: etwa 1.200 Sharing-Systeme weltweit.",
+        "es": "Busca en el catálogo GBFS de MobilityData: unos 1.200 sistemas de movilidad compartida en el mundo."
+      },
+      "timeout_seconds": 60,
       "fields": [
         {
-          "key": "device",
+          "key": "query",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Network, city or country",
+            "fr": "Réseau, ville ou pays",
+            "de": "Netz, Stadt oder Land",
+            "es": "Red, ciudad o país"
+          },
+          "placeholder": {
+            "en": "e.g. Vélib', Lyon, Citi Bike",
+            "fr": "ex. Vélib', Lyon, Bicloo",
+            "de": "z. B. Vélib', Lyon, Citi Bike",
+            "es": "p. ej. Vélib', Lyon, Citi Bike"
+          }
+        }
+      ]
+    },
+    {
+      "key": "add_network",
+      "label": {
+        "en": "Add a network",
+        "fr": "Ajouter un réseau",
+        "de": "Netz hinzufügen",
+        "es": "Añadir una red"
+      },
+      "description": {
+        "en": "Reads the station list of a network. Five networks at most; only networks with stations.",
+        "fr": "Lit la liste des stations d'un réseau. Cinq réseaux au plus ; seulement les réseaux à stations.",
+        "de": "Liest die Stationsliste eines Netzes. Höchstens fünf Netze; nur Netze mit Stationen.",
+        "es": "Lee la lista de estaciones de una red. Cinco redes como máximo; solo redes con estaciones."
+      },
+      "timeout_seconds": 90,
+      "fields": [
+        {
+          "key": "network",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Identifier, name or gbfs.json URL",
+            "fr": "Identifiant, nom ou URL gbfs.json",
+            "de": "Kennung, Name oder gbfs.json-URL",
+            "es": "Identificador, nombre o URL gbfs.json"
+          },
+          "description": {
+            "en": "The identifier is shown in brackets by \"Find a network\". A network outside the catalog: the URL of its gbfs.json.",
+            "fr": "L'identifiant est affiché entre crochets par « Chercher un réseau ». Un réseau hors catalogue : l'URL de son gbfs.json.",
+            "de": "Die Kennung zeigt „Netz suchen“ in Klammern an. Ein Netz außerhalb des Katalogs: die URL seiner gbfs.json.",
+            "es": "El identificador aparece entre corchetes en «Buscar una red». Una red fuera del catálogo: la URL de su gbfs.json."
+          },
+          "placeholder": {
+            "en": "e.g. Paris",
+            "fr": "ex. Paris",
+            "de": "z. B. Paris",
+            "es": "p. ej. Paris"
+          }
+        }
+      ]
+    },
+    {
+      "key": "search_stations",
+      "label": {
+        "en": "Find a station",
+        "fr": "Chercher une station",
+        "de": "Station suchen",
+        "es": "Buscar una estación"
+      },
+      "description": {
+        "en": "Searches the stations of your networks by name or number, or lists the ten closest to your home.",
+        "fr": "Cherche les stations de vos réseaux par nom ou numéro, ou liste les dix plus proches de la maison.",
+        "de": "Sucht die Stationen deiner Netze nach Name oder Nummer, oder listet die zehn nächsten bei deinem Zuhause.",
+        "es": "Busca las estaciones de sus redes por nombre o número, o muestra las diez más cercanas a su casa."
+      },
+      "timeout_seconds": 60,
+      "fields": [
+        {
+          "key": "query",
+          "type": "string",
+          "required": false,
+          "label": {
+            "en": "Station name or number",
+            "fr": "Nom ou numéro de la station",
+            "de": "Name oder Nummer der Station",
+            "es": "Nombre o número de la estación"
+          },
+          "description": {
+            "en": "Empty: the stations around your home (position set in Gladys).",
+            "fr": "Vide : les stations autour de votre maison (position renseignée dans Gladys).",
+            "de": "Leer: die Stationen rund um dein Zuhause (Position in Gladys eingetragen).",
+            "es": "Vacío: las estaciones alrededor de su casa (posición indicada en Gladys)."
+          },
+          "placeholder": {
+            "en": "e.g. République",
+            "fr": "ex. République",
+            "de": "z. B. République",
+            "es": "p. ej. République"
+          }
+        },
+        {
+          "key": "network",
+          "type": "string",
+          "required": false,
+          "label": {
+            "en": "Network (empty: all)",
+            "fr": "Réseau (vide : tous)",
+            "de": "Netz (leer: alle)",
+            "es": "Red (vacío: todas)"
+          },
+          "description": {
+            "en": "Only when several networks are added: its name or identifier.",
+            "fr": "Seulement si plusieurs réseaux sont ajoutés : son nom ou son identifiant.",
+            "de": "Nur wenn mehrere Netze hinzugefügt sind: sein Name oder seine Kennung.",
+            "es": "Solo si hay varias redes añadidas: su nombre o su identificador."
+          },
+          "placeholder": {
+            "en": "e.g. Vélib' Metropole",
+            "fr": "ex. Vélib' Metropole",
+            "de": "z. B. Vélib' Metropole",
+            "es": "p. ej. Vélib' Metropole"
+          }
+        },
+        {
+          "key": "house",
           "type": "select",
+          "source": "houses",
+          "required": false,
+          "label": {
+            "en": "House (optional)",
+            "fr": "Maison (facultatif)",
+            "de": "Zuhause (optional)",
+            "es": "Casa (opcional)"
+          },
+          "description": {
+            "en": "Only with several houses: the one to search around (empty: the first one with a position).",
+            "fr": "Seulement avec plusieurs maisons : celle autour de laquelle chercher (vide : la première qui a une position).",
+            "de": "Nur bei mehreren Häusern: das, um das herum gesucht wird (leer: das erste mit Position).",
+            "es": "Solo con varias casas: aquella alrededor de la cual buscar (vacío: la primera con posición)."
+          }
+        }
+      ]
+    },
+    {
+      "key": "add_station",
+      "label": {
+        "en": "Add a station",
+        "fr": "Ajouter une station",
+        "de": "Station hinzufügen",
+        "es": "Añadir una estación"
+      },
+      "description": {
+        "en": "Watches a station: its device then appears in the Discover tab. Thirty stations at most.",
+        "fr": "Surveille une station : son appareil apparaît ensuite dans l'onglet Découverte. Trente stations au plus.",
+        "de": "Überwacht eine Station: ihr Gerät erscheint dann im Tab „Entdecken“. Höchstens dreißig Stationen.",
+        "es": "Vigila una estación: su dispositivo aparece luego en la pestaña Descubrir. Treinta estaciones como máximo."
+      },
+      "timeout_seconds": 60,
+      "fields": [
+        {
+          "key": "station",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Identifier, number or name",
+            "fr": "Identifiant, numéro ou nom",
+            "de": "Kennung, Nummer oder Name",
+            "es": "Identificador, número o nombre"
+          },
+          "description": {
+            "en": "The identifier is shown in brackets by \"Find a station\".",
+            "fr": "L'identifiant est affiché entre crochets par « Chercher une station ».",
+            "de": "Die Kennung zeigt „Station suchen“ in Klammern an.",
+            "es": "El identificador aparece entre corchetes en «Buscar una estación»."
+          },
+          "placeholder": {
+            "en": "e.g. 213688169",
+            "fr": "ex. 213688169",
+            "de": "z. B. 213688169",
+            "es": "p. ej. 213688169"
+          }
+        },
+        {
+          "key": "network",
+          "type": "string",
+          "required": false,
+          "label": {
+            "en": "Network (empty: all)",
+            "fr": "Réseau (vide : tous)",
+            "de": "Netz (leer: alle)",
+            "es": "Red (vacío: todas)"
+          },
+          "placeholder": {
+            "en": "e.g. Vélib' Metropole",
+            "fr": "ex. Vélib' Metropole",
+            "de": "z. B. Vélib' Metropole",
+            "es": "p. ej. Vélib' Metropole"
+          }
+        }
+      ]
+    },
+    {
+      "key": "remove",
+      "label": {
+        "en": "Remove",
+        "fr": "Retirer",
+        "de": "Entfernen",
+        "es": "Quitar"
+      },
+      "description": {
+        "en": "Stops watching a station, or a network with all its stations. Their devices stay in Gladys until you delete them.",
+        "fr": "Arrête de surveiller une station, ou un réseau et toutes ses stations. Leurs appareils restent dans Gladys jusqu'à ce que vous les supprimiez.",
+        "de": "Beendet die Überwachung einer Station oder eines Netzes mit allen Stationen. Die Geräte bleiben in Gladys, bis du sie löschst.",
+        "es": "Deja de vigilar una estación, o una red con todas sus estaciones. Sus dispositivos quedan en Gladys hasta que los elimine."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Name or identifier",
+            "fr": "Nom ou identifiant",
+            "de": "Name oder Kennung",
+            "es": "Nombre o identificador"
+          },
+          "placeholder": {
+            "en": "e.g. Préfecture",
+            "fr": "ex. Préfecture",
+            "de": "z. B. Préfecture",
+            "es": "p. ej. Préfecture"
+          }
+        }
+      ]
+    },
+    {
+      "key": "status",
+      "label": {
+        "en": "Status",
+        "fr": "État",
+        "de": "Status",
+        "es": "Estado"
+      },
+      "description": {
+        "en": "Networks, stations watched, last readings and errors.",
+        "fr": "Réseaux, stations surveillées, dernières lectures et erreurs.",
+        "de": "Netze, überwachte Stationen, letzte Abfragen und Fehler.",
+        "es": "Redes, estaciones vigiladas, últimas lecturas y errores."
+      },
+      "timeout_seconds": 30,
+      "fields": []
+    }
+  ],
+  "widgets": [
+    {
+      "key": "stations",
+      "label": {
+        "en": "Bike stations",
+        "fr": "Stations vélo",
+        "de": "Radstationen",
+        "es": "Estaciones de bici"
+      },
+      "description": {
+        "en": "Your stations like a departure board: bikes, mechanical and electric, and free docks.",
+        "fr": "Vos stations façon tableau d'affichage : vélos, mécaniques et électriques, et places libres.",
+        "de": "Deine Stationen wie eine Anzeigetafel: Räder, mechanisch und elektrisch, und freie Plätze.",
+        "es": "Sus estaciones como un panel: bicis, mecánicas y eléctricas, y anclajes libres."
+      },
+      "icon": "map-pin",
+      "settings": [
+        {
+          "key": "stations",
+          "type": "multi_select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "required": false,
+          "label": {
+            "en": "Stations shown",
+            "fr": "Stations affichées",
+            "de": "Angezeigte Stationen",
+            "es": "Estaciones mostradas"
+          },
+          "description": {
+            "en": "Empty: every watched station (10 at most). A single one: live tiles.",
+            "fr": "Vide : toutes les stations surveillées (10 au plus). Une seule : tuiles en direct.",
+            "de": "Leer: alle überwachten Stationen (höchstens 10). Eine einzige: Live-Kacheln.",
+            "es": "Vacío: todas las estaciones vigiladas (10 como máximo). Una sola: mosaicos en directo."
+          }
         }
       ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "bikes_low",
+      "label": {
+        "en": "Bikes running out at a station",
+        "fr": "Plus de vélos à une station",
+        "de": "Räder werden an einer Station knapp",
+        "es": "Bicis que se agotan en una estación"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "The bikes available at a watched station drop to the chosen number or below.",
+        "fr": "Les vélos disponibles à une station surveillée descendent au nombre choisi ou en dessous.",
+        "de": "Die verfügbaren Räder an einer überwachten Station fallen auf die gewählte Zahl oder darunter.",
+        "es": "Las bicis disponibles en una estación vigilada bajan al número elegido o por debajo."
       },
       "fields": [
         {
-          "key": "device",
+          "key": "station",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "required": true,
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
+          "key": "bike_type",
+          "type": "select",
+          "required": true,
+          "label": {
+            "en": "Bikes",
+            "fr": "Vélos",
+            "de": "Räder",
+            "es": "Bicis"
+          },
+          "description": {
+            "en": "Mechanical or electric: only on networks that tell them apart.",
+            "fr": "Mécaniques ou électriques : seulement sur les réseaux qui les distinguent.",
+            "de": "Mechanisch oder elektrisch: nur bei Netzen, die sie unterscheiden.",
+            "es": "Mecánicas o eléctricas: solo en las redes que las distinguen."
+          },
           "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
+            {
+              "value": "any",
+              "label": {
+                "en": "Any bike",
+                "fr": "Tous les vélos",
+                "de": "Alle Räder",
+                "es": "Cualquier bici"
+              }
+            },
+            {
+              "value": "mechanical",
+              "label": {
+                "en": "Mechanical bikes",
+                "fr": "Vélos mécaniques",
+                "de": "Mechanische Räder",
+                "es": "Bicis mecánicas"
+              }
+            },
+            {
+              "value": "electric",
+              "label": {
+                "en": "Electric bikes",
+                "fr": "Vélos électriques",
+                "de": "E-Bikes",
+                "es": "Bicis eléctricas"
+              }
+            }
+          ]
+        },
+        {
+          "key": "threshold",
+          "type": "select",
+          "required": true,
+          "label": {
+            "en": "At most",
+            "fr": "Au plus",
+            "de": "Höchstens",
+            "es": "Como máximo"
+          },
+          "options": [
+            {
+              "value": "0",
+              "label": {
+                "en": "0 (none left)",
+                "fr": "0 (plus aucun)",
+                "de": "0 (keins mehr)",
+                "es": "0 (ninguno)"
+              }
+            },
+            {
+              "value": "1",
+              "label": {
+                "en": "1",
+                "fr": "1",
+                "de": "1",
+                "es": "1"
+              }
+            },
+            {
+              "value": "2",
+              "label": {
+                "en": "2",
+                "fr": "2",
+                "de": "2",
+                "es": "2"
+              }
+            },
+            {
+              "value": "3",
+              "label": {
+                "en": "3",
+                "fr": "3",
+                "de": "3",
+                "es": "3"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "5",
+                "fr": "5",
+                "de": "5",
+                "es": "5"
+              }
+            },
+            {
+              "value": "10",
+              "label": {
+                "en": "10",
+                "fr": "10",
+                "de": "10",
+                "es": "10"
+              }
+            }
           ]
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "station_name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "bikes",
+          "type": "number",
+          "label": {
+            "en": "Bikes available",
+            "fr": "Vélos disponibles",
+            "de": "Verfügbare Räder",
+            "es": "Bicis disponibles"
+          }
+        },
+        {
+          "key": "mechanical",
+          "type": "number",
+          "label": {
+            "en": "Mechanical bikes",
+            "fr": "Vélos mécaniques",
+            "de": "Mechanische Räder",
+            "es": "Bicis mecánicas"
+          }
+        },
+        {
+          "key": "electric",
+          "type": "number",
+          "label": {
+            "en": "Electric bikes",
+            "fr": "Vélos électriques",
+            "de": "E-Bikes",
+            "es": "Bicis eléctricas"
+          }
+        },
+        {
+          "key": "docks",
+          "type": "number",
+          "label": {
+            "en": "Free docks",
+            "fr": "Places libres",
+            "de": "Freie Stellplätze",
+            "es": "Anclajes libres"
+          }
+        }
+      ]
+    },
+    {
+      "key": "bikes_back",
+      "label": {
+        "en": "Bikes back at a station",
+        "fr": "Vélos de retour à une station",
+        "de": "Räder wieder an einer Station",
+        "es": "Bicis de vuelta en una estación"
+      },
+      "description": {
+        "en": "The bikes available at a watched station rise above the chosen number again.",
+        "fr": "Les vélos disponibles à une station surveillée repassent au-dessus du nombre choisi.",
+        "de": "Die verfügbaren Räder an einer überwachten Station steigen wieder über die gewählte Zahl.",
+        "es": "Las bicis disponibles en una estación vigilada vuelven a superar el número elegido."
+      },
+      "fields": [
+        {
+          "key": "station",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "bike_type",
+          "type": "select",
+          "required": true,
+          "label": {
+            "en": "Bikes",
+            "fr": "Vélos",
+            "de": "Räder",
+            "es": "Bicis"
+          },
+          "description": {
+            "en": "Mechanical or electric: only on networks that tell them apart.",
+            "fr": "Mécaniques ou électriques : seulement sur les réseaux qui les distinguent.",
+            "de": "Mechanisch oder elektrisch: nur bei Netzen, die sie unterscheiden.",
+            "es": "Mecánicas o eléctricas: solo en las redes que las distinguen."
+          },
+          "options": [
+            {
+              "value": "any",
+              "label": {
+                "en": "Any bike",
+                "fr": "Tous les vélos",
+                "de": "Alle Räder",
+                "es": "Cualquier bici"
+              }
+            },
+            {
+              "value": "mechanical",
+              "label": {
+                "en": "Mechanical bikes",
+                "fr": "Vélos mécaniques",
+                "de": "Mechanische Räder",
+                "es": "Bicis mecánicas"
+              }
+            },
+            {
+              "value": "electric",
+              "label": {
+                "en": "Electric bikes",
+                "fr": "Vélos électriques",
+                "de": "E-Bikes",
+                "es": "Bicis eléctricas"
+              }
+            }
+          ]
+        },
+        {
+          "key": "threshold",
+          "type": "select",
+          "required": true,
+          "label": {
+            "en": "More than",
+            "fr": "Plus de",
+            "de": "Mehr als",
+            "es": "Más de"
+          },
+          "options": [
+            {
+              "value": "0",
+              "label": {
+                "en": "0 (none left)",
+                "fr": "0 (plus aucun)",
+                "de": "0 (keins mehr)",
+                "es": "0 (ninguno)"
+              }
+            },
+            {
+              "value": "1",
+              "label": {
+                "en": "1",
+                "fr": "1",
+                "de": "1",
+                "es": "1"
+              }
+            },
+            {
+              "value": "2",
+              "label": {
+                "en": "2",
+                "fr": "2",
+                "de": "2",
+                "es": "2"
+              }
+            },
+            {
+              "value": "3",
+              "label": {
+                "en": "3",
+                "fr": "3",
+                "de": "3",
+                "es": "3"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "5",
+                "fr": "5",
+                "de": "5",
+                "es": "5"
+              }
+            },
+            {
+              "value": "10",
+              "label": {
+                "en": "10",
+                "fr": "10",
+                "de": "10",
+                "es": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "station_name",
+          "type": "string",
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "bikes",
+          "type": "number",
+          "label": {
+            "en": "Bikes available",
+            "fr": "Vélos disponibles",
+            "de": "Verfügbare Räder",
+            "es": "Bicis disponibles"
+          }
+        },
+        {
+          "key": "mechanical",
+          "type": "number",
+          "label": {
+            "en": "Mechanical bikes",
+            "fr": "Vélos mécaniques",
+            "de": "Mechanische Räder",
+            "es": "Bicis mecánicas"
+          }
+        },
+        {
+          "key": "electric",
+          "type": "number",
+          "label": {
+            "en": "Electric bikes",
+            "fr": "Vélos électriques",
+            "de": "E-Bikes",
+            "es": "Bicis eléctricas"
+          }
+        },
+        {
+          "key": "docks",
+          "type": "number",
+          "label": {
+            "en": "Free docks",
+            "fr": "Places libres",
+            "de": "Freie Stellplätze",
+            "es": "Anclajes libres"
+          }
+        }
+      ]
+    },
+    {
+      "key": "docks_low",
+      "label": {
+        "en": "Docks running out at a station",
+        "fr": "Plus de places à une station",
+        "de": "Stellplätze werden knapp",
+        "es": "Anclajes que se agotan"
+      },
+      "description": {
+        "en": "The free docks of a watched station drop to the chosen number or below: hard to return a bike there.",
+        "fr": "Les places libres d'une station surveillée descendent au nombre choisi ou en dessous : difficile d'y rendre un vélo.",
+        "de": "Die freien Stellplätze einer überwachten Station fallen auf die gewählte Zahl oder darunter: Rückgabe dort schwierig.",
+        "es": "Los anclajes libres de una estación vigilada bajan al número elegido o por debajo: difícil devolver una bici allí."
+      },
+      "fields": [
+        {
+          "key": "station",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "threshold",
+          "type": "select",
+          "required": true,
+          "label": {
+            "en": "At most",
+            "fr": "Au plus",
+            "de": "Höchstens",
+            "es": "Como máximo"
+          },
+          "options": [
+            {
+              "value": "0",
+              "label": {
+                "en": "0 (none left)",
+                "fr": "0 (plus aucun)",
+                "de": "0 (keins mehr)",
+                "es": "0 (ninguno)"
+              }
+            },
+            {
+              "value": "1",
+              "label": {
+                "en": "1",
+                "fr": "1",
+                "de": "1",
+                "es": "1"
+              }
+            },
+            {
+              "value": "2",
+              "label": {
+                "en": "2",
+                "fr": "2",
+                "de": "2",
+                "es": "2"
+              }
+            },
+            {
+              "value": "3",
+              "label": {
+                "en": "3",
+                "fr": "3",
+                "de": "3",
+                "es": "3"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "5",
+                "fr": "5",
+                "de": "5",
+                "es": "5"
+              }
+            },
+            {
+              "value": "10",
+              "label": {
+                "en": "10",
+                "fr": "10",
+                "de": "10",
+                "es": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "station_name",
+          "type": "string",
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "bikes",
+          "type": "number",
+          "label": {
+            "en": "Bikes available",
+            "fr": "Vélos disponibles",
+            "de": "Verfügbare Räder",
+            "es": "Bicis disponibles"
+          }
+        },
+        {
+          "key": "mechanical",
+          "type": "number",
+          "label": {
+            "en": "Mechanical bikes",
+            "fr": "Vélos mécaniques",
+            "de": "Mechanische Räder",
+            "es": "Bicis mecánicas"
+          }
+        },
+        {
+          "key": "electric",
+          "type": "number",
+          "label": {
+            "en": "Electric bikes",
+            "fr": "Vélos électriques",
+            "de": "E-Bikes",
+            "es": "Bicis eléctricas"
+          }
+        },
+        {
+          "key": "docks",
+          "type": "number",
+          "label": {
+            "en": "Free docks",
+            "fr": "Places libres",
+            "de": "Freie Stellplätze",
+            "es": "Anclajes libres"
+          }
+        }
+      ]
+    },
+    {
+      "key": "docks_back",
+      "label": {
+        "en": "Docks free again at a station",
+        "fr": "Places de retour à une station",
+        "de": "Wieder freie Stellplätze",
+        "es": "Anclajes libres de nuevo"
+      },
+      "description": {
+        "en": "The free docks of a watched station rise above the chosen number again.",
+        "fr": "Les places libres d'une station surveillée repassent au-dessus du nombre choisi.",
+        "de": "Die freien Stellplätze einer überwachten Station steigen wieder über die gewählte Zahl.",
+        "es": "Los anclajes libres de una estación vigilada vuelven a superar el número elegido."
+      },
+      "fields": [
+        {
+          "key": "station",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "threshold",
+          "type": "select",
+          "required": true,
+          "label": {
+            "en": "More than",
+            "fr": "Plus de",
+            "de": "Mehr als",
+            "es": "Más de"
+          },
+          "options": [
+            {
+              "value": "0",
+              "label": {
+                "en": "0 (none left)",
+                "fr": "0 (plus aucun)",
+                "de": "0 (keins mehr)",
+                "es": "0 (ninguno)"
+              }
+            },
+            {
+              "value": "1",
+              "label": {
+                "en": "1",
+                "fr": "1",
+                "de": "1",
+                "es": "1"
+              }
+            },
+            {
+              "value": "2",
+              "label": {
+                "en": "2",
+                "fr": "2",
+                "de": "2",
+                "es": "2"
+              }
+            },
+            {
+              "value": "3",
+              "label": {
+                "en": "3",
+                "fr": "3",
+                "de": "3",
+                "es": "3"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "5",
+                "fr": "5",
+                "de": "5",
+                "es": "5"
+              }
+            },
+            {
+              "value": "10",
+              "label": {
+                "en": "10",
+                "fr": "10",
+                "de": "10",
+                "es": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "station_name",
+          "type": "string",
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "bikes",
+          "type": "number",
+          "label": {
+            "en": "Bikes available",
+            "fr": "Vélos disponibles",
+            "de": "Verfügbare Räder",
+            "es": "Bicis disponibles"
+          }
+        },
+        {
+          "key": "mechanical",
+          "type": "number",
+          "label": {
+            "en": "Mechanical bikes",
+            "fr": "Vélos mécaniques",
+            "de": "Mechanische Räder",
+            "es": "Bicis mecánicas"
+          }
+        },
+        {
+          "key": "electric",
+          "type": "number",
+          "label": {
+            "en": "Electric bikes",
+            "fr": "Vélos électriques",
+            "de": "E-Bikes",
+            "es": "Bicis eléctricas"
+          }
+        },
+        {
+          "key": "docks",
+          "type": "number",
+          "label": {
+            "en": "Free docks",
+            "fr": "Places libres",
+            "de": "Freie Stellplätze",
+            "es": "Anclajes libres"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
+      "key": "get_station",
+      "label": {
+        "en": "Read a bike station",
+        "fr": "Lire une station vélo",
+        "de": "Radstation lesen",
+        "es": "Leer una estación de bici"
+      },
       "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+        "en": "The bikes and free docks of a watched station, with a sentence ready to send: \"Préfecture: 4 bikes, 29 free docks.\"",
+        "fr": "Les vélos et places libres d'une station surveillée, avec une phrase prête à envoyer : « Préfecture : 4 vélos, 29 places libres. »",
+        "de": "Die Räder und freien Stellplätze einer überwachten Station, mit einem fertigen Satz: „Préfecture: 4 Räder, 29 freie Stellplätze.“",
+        "es": "Las bicis y anclajes libres de una estación vigilada, con una frase lista para enviar: «Préfecture: 4 bicis, 29 anclajes libres.»"
       },
       "timeout_seconds": 15,
       "fields": [
         {
-          "key": "device",
+          "key": "station",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "required": true,
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "sentence",
+          "type": "string",
+          "label": {
+            "en": "Sentence",
+            "fr": "Phrase",
+            "de": "Satz",
+            "es": "Frase"
+          }
+        },
+        {
+          "key": "station_name",
+          "type": "string",
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          }
+        },
+        {
+          "key": "bikes",
+          "type": "number",
+          "label": {
+            "en": "Bikes available",
+            "fr": "Vélos disponibles",
+            "de": "Verfügbare Räder",
+            "es": "Bicis disponibles"
+          }
+        },
+        {
+          "key": "mechanical",
+          "type": "number",
+          "label": {
+            "en": "Mechanical bikes",
+            "fr": "Vélos mécaniques",
+            "de": "Mechanische Räder",
+            "es": "Bicis mecánicas"
+          }
+        },
+        {
+          "key": "electric",
+          "type": "number",
+          "label": {
+            "en": "Electric bikes",
+            "fr": "Vélos électriques",
+            "de": "E-Bikes",
+            "es": "Bicis eléctricas"
+          }
+        },
+        {
+          "key": "docks",
+          "type": "number",
+          "label": {
+            "en": "Free docks",
+            "fr": "Places libres",
+            "de": "Freie Stellplätze",
+            "es": "Anclajes libres"
+          }
+        },
+        {
+          "key": "renting",
+          "type": "number",
+          "label": {
+            "en": "Renting open (1 = yes, 0 = no)",
+            "fr": "Location possible (1 = oui, 0 = non)",
+            "de": "Ausleihe möglich (1 = ja, 0 = nein)",
+            "es": "Préstamo posible (1 = sí, 0 = no)"
+          }
+        },
+        {
+          "key": "returning",
+          "type": "number",
+          "label": {
+            "en": "Returns open (1 = yes, 0 = no)",
+            "fr": "Retour possible (1 = oui, 0 = non)",
+            "de": "Rückgabe möglich (1 = ja, 0 = nein)",
+            "es": "Devolución posible (1 = sí, 0 = no)"
+          }
         }
       ]
-    }
-  ],
-  "widgets": [
-    {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
-      },
-      "icon": "activity",
-      "action_timeout_seconds": 15
     }
   ]
 }

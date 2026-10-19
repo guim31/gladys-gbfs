@@ -31,16 +31,25 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+index.js                          SDK wiring only: registerHandlers() then connect()
+src/app.js                        every SDK handler -> service; configuration actions
+src/service.js                    networks and stations, timers, devices/states, triggers, actions
+src/network.js                    one network: gbfs.json, station list (daily, cached), status reads
+src/gbfs.js                       GBFS 1.0 to 3.x parsing (names, types, flags, dates)
+src/catalog.js                    MobilityData systems.csv: CSV reader, search, cache
+src/devices.js                    the Gladys device of a station, its states
+src/scenes.js                     scene action handler (manifest `scene_actions`)
+src/widgets.js                    dashboard widget handler (manifest `widgets`)
+src/search.js                     search by name, distances
+src/http.js                       downloads: timeouts, size caps, ETag, Retry-After
+src/messages.js                   texts sent from the container (en, fr, de, es)
+src/store.js                      /data files (atomic, coalesced writes)
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
-gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
+gladys-assistant-integration.json manifest: config, actions, widget, scene triggers and action
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (en and fr mandatory)
 test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+test/helpers/world.js             fake Gladys + fake fetch on the fixtures + manual clock + /data
+test/fixtures/gbfs, catalog       real feeds of five networks and a catalog sample, reduced
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +79,9 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** is in English, French, German and Spanish: action
+  messages, manifest texts, feature names, and `docs/{en,fr,de,es}.md`, kept
+  in sync (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +243,34 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+# Intégration GBFS (notes de développement, 19/10/2026)
+
+## Sources
+
+- Spécification : https://github.com/MobilityData/gbfs (versions 1.0 à 3.0). Catalogue :
+  `systems.csv` du même dépôt (~1 260 systèmes, vélos mais aussi trottinettes, voitures,
+  free-floating ; colonne `Authentication Type` pour les rares flux à clé).
+- Fixtures réelles du 19/10/2026 (`test/fixtures/gbfs`) : Vélib' (« 1.0 » sans champ `version`),
+  Naolib (3.0, JCDecaux), V'lille (2.3), Vélibéo (3.0, Ecovélo), Citi Bike (2.3, Lyft).
+
+## Pièges découverts
+
+- **Vélib'** : `station_id` numériques (jusqu'à 11 chiffres), drapeaux `0/1`, numéro public dans
+  `stationCode`, types en `num_bikes_available_types: [{ mechanical: n }, { ebike: n }]` (pas de
+  `vehicle_types.json`), et **`ttl` 3600 sur des données rafraîchies chaque minute** : le `ttl`
+  n'est honoré que jusqu'à 5 minutes (`MAX_TTL_HONORED_S`).
+- **GBFS 3.0** : noms localisés `[{ text, language }]` (Naolib en majuscules : `prettyStationName`),
+  `num_vehicles_available`, `last_reported` en RFC 3339. Des stations sans nom (Naolib) : le nom
+  devient l'identifiant.
+- **Lyft (Citi Bike)** : `last_reported: 86400` pour une station inactive, ignoré.
+- Des **trottinettes** stationnent dans des stations (Vélibéo) : comptées hors vélos grâce à
+  `form_factor`. Un réseau « distingue » mécaniques et électriques si une station liste les deux
+  types (même à 0) ; une fois vu, `split` reste vrai (les fonctionnalités ne vont et viennent pas).
+- Citi Bike publie une liste de flux par langue (`en`, `fr`, `es`) avec des URL différentes : la
+  langue de la config est préférée, sinon `en`.
+- Une URL de flux peut porter une clé publique en paramètre (Le Vélo TBM : `?apiKey=…`) : les
+  journaux et messages n'affichent que l'hôte (`hostOf`).
+- Le test i18n prend « Sie wurde » (« elle a été ») pour un vouvoiement : tourner la phrase.
+- Les clés d'appareil (`station:<réseau>-<station>`) partent de l'identifiant du catalogue
+  (`System ID` en minuscules) ou d'un hachage de l'URL hors catalogue : ne jamais les changer.

@@ -1,0 +1,214 @@
+# Leihräder (GBFS)
+
+Die **verfügbaren Räder** und die **freien Stellplätze** deiner
+Leihrad-Stationen, für **jedes Netz**, das seine Daten im offenen Standard
+**GBFS** veröffentlicht (General Bikeshare Feed Specification, Versionen 1.0
+bis 3.0): Vélib' Métropole (Paris), Vélo'v (Lyon), Naolib (Nantes), V'lille,
+VélôToulouse, Villo! (Brüssel), Citi Bike (New York), BiciMAD (Madrid) und
+rund tausend weitere aus dem offiziellen Katalog von MobilityData. **Kein
+Konto, kein Schlüssel.**
+
+Eine Stadt mit eigener Gladys-Integration ist damit vielleicht besser
+bedient: Tisséo (Toulouse, mit VélôToulouse), Le Vélo (Bordeaux), STM
+(Montréal, mit BIXI), TCL (Lyon). Diese hier ist die allgemeine Ergänzung für
+alle anderen Netze.
+
+Diese Integration ist ein Community-Projekt, weder mit MobilityData noch mit
+einem Leihrad-Betreiber verbunden. Getestet wurde sie mit den echten Feeds von fünf
+Netzen, aber noch auf wenigen Gladys-Installationen: Rückmeldungen
+sind willkommen.
+
+## Was du bekommst
+
+- **Ein Gerät pro überwachter Station**: verfügbare Räder, mechanische Räder
+  und E-Bikes (wenn das Netz sie unterscheidet), freie Stellplätze, und ob
+  die Station in Betrieb ist, ob man ein Rad ausleihen und ob man eines
+  zurückgeben kann.
+- **Widget „Radstationen“**: deine Stationen wie eine Anzeigetafel, oder
+  Live-Kacheln für eine einzige Station.
+- **Vier Szenen-Auslöser**: Räder werden knapp, Räder wieder da, Stellplätze
+  werden knapp, wieder freie Stellplätze, bei der Zahl deiner Wahl.
+- **Szenen-Aktion „Radstation lesen“**, mit einem fertigen Satz
+  („Préfecture: 4 Räder, 29 freie Stellplätze.“).
+- Bis zu **5 Netze** und **30 Stationen**.
+
+## Voraussetzungen
+
+- Gladys Assistant **5.2.0** oder neuer.
+- Internetzugang vom Gladys-Rechner (die Feeds sind online).
+- Für die Suche rund um dein Zuhause: die **Position deines Hauses** in
+  Gladys (Einstellungen → Häuser). Die Integration fragt bei der Installation
+  danach.
+
+## Installation
+
+1. Öffne in Gladys **Integrationen → Von GitHub installieren**.
+2. Gib `https://github.com/guim31/gladys-gbfs` ein.
+3. Erlaube den angefragten Zugriff (die Position deiner Häuser, nur genutzt,
+   um die nächsten Stationen zu finden).
+
+## Konfiguration
+
+### Einstellungen
+
+- **Sprache der Texte**: Funktionsnamen, Stationsnamen (wenn das Netz sie
+  übersetzt) und die Sätze für Szenen. Funktionsnamen werden beim Anlegen
+  des Geräts festgelegt.
+- **Aktualisierungsintervall**: 1, 2, 5 oder 10 Minuten. Die Integration liest
+  ein Netz nie schneller, als sein `ttl` erlaubt (bis zu 5 Minuten, siehe
+  „Daten, Aktualisierung und Volumen“).
+
+### Netz hinzufügen
+
+1. Starte **Netz suchen** mit einem Netznamen, einer Stadt oder einem
+   Ländercode (`Vélib'`, `Lyon`, `BE`). Jedes Ergebnis zeigt seine Kennung in
+   Klammern, zum Beispiel `Vélib' Metropole — Paris, FR [Paris] · GBFS 1.0`.
+2. Starte **Netz hinzufügen** mit dieser Kennung (oder dem genauen Namen).
+   Die Integration liest die Stationsliste und sagt dir, wie viele Stationen
+   sie gefunden hat und ob sie mechanische Räder und E-Bikes unterscheidet.
+
+Ein Netz, das im Katalog fehlt: gib die URL seiner `gbfs.json` an. Der
+Katalog führt auch Roller, Autos und Free-Floating-Räder: nur Systeme **mit
+Stationen** lassen sich hinzufügen, und Systeme mit Zugangsschlüssel werden
+nicht unterstützt.
+
+### Station hinzufügen
+
+1. Starte **Station suchen**: leer listet sie die zehn Stationen, die deinem
+   Zuhause am nächsten sind, mit Entfernung und aktuellen Rädern; mit einem
+   Namen oder einer Stationsnummer (Vélib'-Nummern wie `16107`
+   funktionieren) die passenden Stationen.
+2. Starte **Station hinzufügen** mit der Kennung in Klammern.
+3. Öffne den Tab **Entdecken** der Integration und lege das Gerät an.
+
+Bei mehreren Netzen füllst du das Feld **Netz** aus, um nur eines zu
+durchsuchen. Bei mehreren Häusern wählst du das **Zuhause**, um das herum
+gesucht wird.
+
+### Entfernen, Feeds prüfen
+
+- **Entfernen** beendet die Überwachung einer Station (nach Name oder
+  Kennung) oder eines ganzen Netzes mit seinen Stationen. Die Geräte bleiben
+  in Gladys, bis du sie löschst.
+- **Status** zeigt jedes Netz: seine GBFS-Version, seine Stationsliste, das
+  Alter der letzten Abfrage, den Rhythmus, das Volumen pro Stunde, die
+  überwachten Stationen und den letzten Fehler.
+
+## Geräte
+
+### Station
+
+| Funktion           | Typ             | Bedeutung                                     |
+| ------------------ | --------------- | --------------------------------------------- |
+| Verfügbare Räder   | Zähler          | Fahrräder zum Ausleihen (Roller zählen nicht) |
+| Mechanische Räder  | Zähler          | nur wenn das Netz sie unterscheidet           |
+| E-Bikes            | Zähler          | ebenso                                        |
+| Freie Stellplätze  | Zähler          | Plätze für die Rückgabe                       |
+| Station in Betrieb | Eingang (binär) | 1 = aufgebaut und in Betrieb                  |
+| Ausleihe möglich   | Eingang (binär) | 1 = ein Rad kann ausgeliehen werden           |
+| Rückgabe möglich   | Eingang (binär) | 1 = ein Rad kann zurückgegeben werden         |
+
+Die Zähler gehen von 0 bis zur Kapazität der Station: eine Anzeige oder ein
+Diagramm richtet sich danach.
+
+## Dashboard-Widget
+
+**Radstationen**: wähle die anzuzeigenden Stationen (leer: alle, höchstens
+zehn). Jede Zeile zeigt mechanische Räder, E-Bikes und freie Stellplätze,
+grün, orange ab zwei Rädern oder weniger, rot ohne Rad, grau außer Betrieb.
+Mit einer einzigen Station, deren Gerät angelegt ist, zeigt das Widget
+Live-Kacheln.
+
+## Szenen-Auslöser
+
+- **Räder werden an einer Station knapp**: die Räder (alle, mechanische oder
+  E-Bikes) fallen auf die gewählte Zahl oder darunter (0, 1, 2, 3, 5 oder 10).
+- **Räder wieder an einer Station**: sie steigen wieder über die gewählte
+  Zahl.
+- **Stellplätze werden knapp**: die freien Stellplätze fallen auf die
+  gewählte Zahl oder darunter.
+- **Wieder freie Stellplätze**: sie steigen wieder darüber.
+
+Jeder Auslöser gibt der Szene den Stationsnamen, die Räder (alle, mechanisch,
+elektrisch) und die freien Stellplätze in diesem Moment. Schwellen für
+mechanische Räder und E-Bikes lösen nur bei Netzen aus, die sie
+unterscheiden.
+
+## Szenen-Aktion
+
+**Radstation lesen** liefert einen Satz für eine Nachricht oder einen
+Lautsprecher („Benjamin Godard - Victor Hugo: 25 Räder (21 mechanisch, 4
+elektrisch), 10 freie Stellplätze.“) und Zahlen für einen Schritt „Nur
+fortfahren, wenn“: Räder, mechanisch, elektrisch, Stellplätze, Ausleihe
+(1/0), Rückgabe (1/0).
+
+## Szenen-Beispiele
+
+- **Vor dem Weg zur Arbeit**: werktags um 8:00 die Station vor der Haustür
+  lesen und den Satz per Telegram schicken.
+- **Keine E-Bikes mehr**: „Räder werden knapp“, E-Bikes, höchstens 0, an
+  deiner üblichen Station: eine Benachrichtigung, damit du etwas früher
+  losgehst.
+- **Heimweg am Abend**: „Stellplätze werden knapp“, höchstens 2, an der
+  Station beim Büro: gewarnt sein, bevor du hinfährst.
+
+## Daten, Aktualisierung und Volumen
+
+- Der **Katalog** der Netze (`systems.csv` von MobilityData, 180 kB) wird nur
+  für eine Suche oder ein Hinzufügen gelesen und einen Tag behalten.
+- Die **Stationsliste** jedes Netzes wird beim Hinzufügen gelesen, dann
+  höchstens einmal am Tag, und im Volume `/data` der Integration gespeichert.
+- Der **Stationsstatus** wird im gewählten Intervall gelesen, mindestens eine
+  Minute, nie schneller als das `ttl`, das das Netz angibt. Ein `ttl` über
+  fünf Minuten wird gedeckelt: Vélib' gibt eine Stunde für minütlich
+  aktualisierte Daten an, es wird alle 5 Minuten gelesen. Wenn der Server es
+  erlaubt, wird ein unveränderter Feed nicht erneut heruntergeladen.
+- Volumen: von wenigen kB pro Abfrage (kleine Netze) bis etwa 1 MB (Citi
+  Bike); Vélib' wiegt etwa 460 kB pro Abfrage. Die Aktion **Status** zeigt
+  das Volumen pro Stunde deiner Netze.
+- Ein Server, der „429 Too Many Requests“ oder „503“ antwortet, wird so lange
+  in Ruhe gelassen, wie er verlangt.
+- Die Daten gehören dem jeweiligen Betreiber und stehen unter dessen Lizenz
+  (oft ODbL oder eine offene Lizenz): prüfe sie, bevor du sie anderswo
+  verwendest.
+
+## Fehlerbehebung
+
+- **„veröffentlicht keine Stationen“**: das System ist Free-Floating (Räder
+  oder Roller überall abgestellt): es hat keine Stationen zum Überwachen.
+- **„ist nicht lesbar (… HTTP 404)“**: der Betreiber hat seine Feeds
+  verschoben. Suche das Netz erneut oder gib die aktuelle URL seiner
+  `gbfs.json` an.
+- **Keine Funktionen für mechanische Räder/E-Bikes**: das Netz unterscheidet
+  sie in seinem Feed nicht (Naolib, V'lille…) oder hat nur E-Bikes.
+- **Ein Gerät zeigt alte Werte**: starte **Status**; der letzte Fehler sagt,
+  warum. Die Zustände kommen von selbst zurück, sobald der Feed wieder
+  antwortet.
+- **Die Suche rund um dein Zuhause ist leer**: trage die Position deines
+  Hauses in Gladys ein oder suche nach Namen.
+- **`docker logs`**: standardmäßig ruhig; setze `LOG_LEVEL=debug`, um jede
+  Abfrage zu sehen.
+
+## Einschränkungen
+
+- Nur Stationen: Free-Floating-Fahrzeuge (`free_bike_status`,
+  `vehicle_status`) werden nicht gelesen.
+- Feeds mit Schlüssel oder Token werden nicht unterstützt.
+- Funktionsnamen und Funktionsliste werden beim Anlegen des Geräts
+  festgelegt: ein Netz, das später Räder unterscheidet, schlägt im Tab
+  „Entdecken“ „Aktualisieren“ vor.
+- Bis zu 5 Netze und 30 Stationen, zehn Zeilen im Widget.
+- Die Datenqualität ist die des Betreibers: manche Netze aktualisieren ihren
+  Feed nur alle paar Minuten.
+
+## Danksagungen
+
+- [GBFS](https://github.com/MobilityData/gbfs) und sein Systemkatalog:
+  MobilityData und die GBFS-Mitwirkenden (Apache 2.0 für die Spezifikation).
+- Gleicher Zweck wie die Home-Assistant-Plattform `citybikes` und die
+  HACS-Integration `gbfs`; kein Code daraus übernommen. Die Radstationen der
+  Tisséo-Integration waren der erste Entwurf.
+- Test-Fixtures: echte Feeds von Vélib' Métropole, Naolib, V'lille, Vélibéo
+  und Citi Bike, auf wenige Stationen reduziert.
+- Stationsdaten: der jeweilige Netzbetreiber (Smovengo für Vélib', JCDecaux,
+  Ilévia, Lyft, Ecovélo…).

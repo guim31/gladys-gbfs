@@ -1,8 +1,8 @@
 {
-  "name": "gladys-integration-template-js",
+  "name": "gladys-gbfs",
   "version": "1.0.0",
   "private": true,
-  "description": "Official starter template to build an external integration for Gladys Assistant with the JavaScript SDK.",
+  "description": "Gladys Assistant integration: bikes and free docks of any bike sharing station published in the GBFS open standard.",
   "type": "module",
   "main": "index.js",
   "scripts": {
