@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-19
+
 ### Added
 
 - The bikes and free docks of any bike sharing station published in the GBFS
@@ -25,4 +27,5 @@ the notes of the version's GitHub Release.
 - Texts, feature names and documentation in English, French, German and
   Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-gbfs/commits/main
+[Unreleased]: https://github.com/guim31/gladys-gbfs/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-gbfs/releases/tag/v1.0.0
