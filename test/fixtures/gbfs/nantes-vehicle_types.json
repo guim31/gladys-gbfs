@@ -1,0 +1,27 @@
+{
+  "last_updated": "2026-10-19T15:33:11.086869546Z",
+  "ttl": 3600,
+  "version": "3.0",
+  "data": {
+    "vehicle_types": [
+      {
+        "vehicle_type_id": "mechanical",
+        "form_factor": "bicycle",
+        "propulsion_type": "human",
+        "name": [
+          {
+            "text": "Naolib",
+            "language": "fr"
+          },
+          {
+            "text": "Naolib",
+            "language": "en"
+          }
+        ],
+        "max_range_meters": 0,
+        "default_reserve_time": 0,
+        "return_constraint": "any_station"
+      }
+    ]
+  }
+}

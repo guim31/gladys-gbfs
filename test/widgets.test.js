@@ -1,77 +1,147 @@
+// -----------------------------------------------------------------------------
+// The dashboard widget and the scene action, on the real (reduced) feeds.
+// -----------------------------------------------------------------------------
+
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateWidgetContent } from '@gladysassistant/integration-sdk';
-import { createFakeGladys } from '@gladysassistant/integration-sdk/testing';
-import { buildDiscoveredDevices } from '../src/devices/index.js';
-import { simulateLanSession } from '../src/devices/plug.js';
-import { DEMO_STATUS_WIDGET, WIDGETS, refreshWidgets } from '../src/widgets.js';
-import { normalizeConfig } from '../src/config.js';
+import { WIDGET_COLORS, validateWidgetContent } from '@gladysassistant/integration-sdk';
+import { action, create, createWorld, cycle, feedUrl, setStatus } from './helpers/world.js';
 
-const gladys = createFakeGladys();
-const config = normalizeConfig();
-const demoStatus = WIDGETS[DEMO_STATUS_WIDGET];
+const GODARD = '213688169';
 
-// What the SDK passes to onWidgetGet, plus the config index.js adds.
-const getContent = (cfg = config) =>
-  demoStatus.get(gladys, { settings: {}, language: 'en', units: 'metric', config: cfg });
+async function world(t, networks = ['Paris']) {
+  const w = await createWorld({ networks });
+  t.after(() => w.app.stop());
+  return w;
+}
 
-test('the demo_status content is rendered exactly as sent', async () => {
-  // [] = nothing the core would drop, truncate or trim to the content budget.
-  assert.deepEqual(validateWidgetContent(await getContent()), []);
+const widget = async (w, settings = {}, language = 'fr') => {
+  const ack = await w.fake.widgetGet('stations', { settings, language });
+  assert.equal(ack.success, true, ack.error);
+  const { content } = ack.data;
+  assert.deepEqual(validateWidgetContent(content), [], JSON.stringify(content));
+  return content;
+};
+
+test('no station yet: the widget says how to add one', async (t) => {
+  const w = await world(t);
+  const content = await widget(w);
+  assert.deepEqual(content.components, [
+    { type: 'text', text: "Ajoutez une station dans l'intégration, puis choisissez-la ici." },
+  ]);
 });
 
-test('the degraded plug connection content is valid too', async () => {
-  simulateLanSession(false);
-  try {
-    const content = await getContent();
-    assert.deepEqual(validateWidgetContent(content), []);
-    const status = content.components.find((component) => component.type === 'status');
-    assert.ok(
-      status.items.some((item) => item.color === 'warning'),
-      'degraded shows a warning',
-    );
-  } finally {
-    simulateLanSession(true);
+test('several stations: one status row each, colored by the bikes left', async (t) => {
+  const w = await world(t);
+  for (const station of [GODARD, '48800374', '21584689525']) {
+    await action(w, 'add_station', { station });
   }
+  const content = await widget(w);
+  assert.equal(content.ttl_seconds, 60);
+  assert.deepEqual(content.components[0].items, [
+    {
+      label: 'Benjamin Godard - Victor Hugo',
+      value: '21 méca · 4 élec · 10 places',
+      color: WIDGET_COLORS.SUCCESS,
+    },
+    {
+      label: "Place de l'Hôtel de Ville",
+      value: '3 méca · 1 élec · 9 places',
+      color: WIDGET_COLORS.SUCCESS,
+    },
+    { label: 'Station Tour de France', value: 'hors service', color: WIDGET_COLORS.NEUTRAL },
+  ]);
+  setStatus(w, 'velib', '48800374', {
+    num_bikes_available: 1,
+    num_bikes_available_types: [{ mechanical: 1 }, { ebike: 0 }],
+  });
+  await cycle(w, 300);
+  const english = await widget(w, {}, 'en');
+  assert.deepEqual(english.components[0].items[1], {
+    label: "Place de l'Hôtel de Ville",
+    value: '1 mech. · 0 elec. · 9 docks',
+    color: WIDGET_COLORS.WARNING,
+  });
 });
 
-test('the live tiles reference features the integration publishes', async () => {
-  const featureIds = new Set(
-    buildDiscoveredDevices(gladys, config).flatMap((device) =>
-      device.features.map((feature) => feature.external_id),
-    ),
+test('one created station: live tiles bound to its features', async (t) => {
+  const w = await world(t);
+  await action(w, 'add_station', { station: GODARD });
+  const device = await create(w, 'Benjamin Godard');
+  const content = await widget(w, { stations: [device.external_id] });
+  assert.deepEqual(
+    content.components.map((c) => c.type),
+    ['text', 'value', 'value', 'value'],
   );
-  const liveTiles = (await getContent()).components.filter((c) => c.device_feature);
-  assert.ok(liveTiles.length > 0, 'the template demonstrates a device-bound tile');
-  for (const tile of liveTiles) {
-    assert.ok(featureIds.has(tile.device_feature), `unknown feature ${tile.device_feature}`);
+  const ids = new Set(device.features.map((f) => f.external_id));
+  for (const component of content.components.filter((c) => c.type === 'value')) {
+    assert.ok(ids.has(component.device_feature), component.device_feature);
   }
 });
 
-test('every button action of the content is handled and answers a short toast', async () => {
-  const buttons = (await getContent()).components.filter((c) => c.type === 'button' && c.action);
-  assert.ok(buttons.length > 0, 'the template demonstrates a widget action');
-  for (const { action } of buttons) {
-    const message = await demoStatus.action(gladys, {
-      actionKey: action.key,
-      params: action.params ?? {},
-      settings: {},
-      config,
-    });
-    assert.ok(message.en, 'the toast carries at least the mandatory `en` text');
-    assert.ok(message.en.length <= 200, 'toasts are capped at 200 characters');
-  }
-});
-
-test('an unknown widget action fails, so the user sees the error', async () => {
-  await assert.rejects(
-    demoStatus.action(gladys, { actionKey: 'unknown', params: {}, settings: {}, config }),
-    /Unknown widget action/,
+test('several networks: the rows carry the network name', async (t) => {
+  const w = await world(t, ['Paris', 'nantes']);
+  await action(w, 'add_station', { station: GODARD });
+  await action(w, 'add_station', { station: '1', network: 'nantes' });
+  const content = await widget(w);
+  assert.deepEqual(
+    content.components[0].items.map((item) => [item.label, item.value]),
+    [
+      ["Vélib' Metropole · Benjamin Godard - Vi…", '21 méca · 4 élec · 10 places'],
+      ['Naolib · Préfecture', '4 vélos · 29 places'],
+    ],
   );
 });
 
-test('refreshWidgets nudges every widget', () => {
-  const fresh = createFakeGladys();
-  refreshWidgets(fresh);
-  assert.deepEqual(fresh.fake.widgetRefreshes, Object.keys(WIDGETS));
+test('the scene action: a sentence and numbers, in the configured language', async (t) => {
+  const w = await world(t, ['Paris', 'nantes']);
+  await action(w, 'add_station', { station: GODARD });
+  await action(w, 'add_station', { station: '1', network: 'nantes' });
+  const godard = await create(w, 'Benjamin Godard');
+  const prefecture = await create(w, 'Préfecture');
+  const read = async (device) => {
+    const ack = await w.fake.sceneAction('get_station', { station: device.external_id });
+    assert.equal(ack.success, true, ack.error);
+    return ack.data.outputs;
+  };
+  assert.deepEqual(await read(godard), {
+    sentence:
+      'Benjamin Godard - Victor Hugo : 25 vélos (21 mécaniques, 4 électriques), 10 places libres.',
+    station_name: 'Benjamin Godard - Victor Hugo',
+    bikes: 25,
+    mechanical: 21,
+    electric: 4,
+    docks: 10,
+    renting: 1,
+    returning: 1,
+  });
+  assert.equal((await read(prefecture)).sentence, 'Préfecture : 4 vélos, 29 places libres.');
+  setStatus(w, 'nantes', '1', { is_returning: false });
+  await cycle(w, 60);
+  assert.equal(
+    (await read(prefecture)).sentence,
+    "Préfecture : 4 vélos, 29 places libres. Impossible d'y rendre un vélo.",
+  );
+  const gone = await w.fake.sceneAction('get_station', { station: 'ext:nothing' });
+  assert.equal(gone.success, false);
+  assert.match(gone.error, /plus surveillée/);
+});
+
+test('a feed down for long: the widget and the scene action do not show old values', async (t) => {
+  const w = await world(t, ['nantes']);
+  await action(w, 'add_station', { station: '1' });
+  await action(w, 'add_station', { station: '3' });
+  const prefecture = await create(w, 'Préfecture');
+  w.network.routes[feedUrl('nantes', 'station_status')] = 503;
+  for (let i = 0; i < 4; i += 1) {
+    await cycle(w, 400);
+  }
+  const content = await widget(w);
+  assert.deepEqual(
+    content.components[0].items.map((item) => item.value),
+    ['flux indisponible', 'flux indisponible'],
+  );
+  const read = await w.fake.sceneAction('get_station', { station: prefecture.external_id });
+  assert.equal(read.success, false);
+  assert.match(read.error, /pas encore été lue/);
 });

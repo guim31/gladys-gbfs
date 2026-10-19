@@ -30,6 +30,14 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+The integration stores in its `/data` volume the networks and stations you
+added (`watch.json`), a copy of the station list of each network and of the
+MobilityData catalog. No secret: the feeds it reads are public open data,
+fetched over HTTPS from the operators' servers and from GitHub. It reads the
+position of your Gladys houses (manifest `location`) to list the closest
+stations; it is neither stored nor logged nor sent anywhere. The logs never
+show the path nor the query string of a feed URL.
+
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+and the bike sharing operators and their feeds.

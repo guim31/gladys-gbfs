@@ -1,0 +1,135 @@
+{
+  "data": {
+    "stations": [
+      {
+        "station_id": "66dbe8d6-0aca-11e7-82f6-3863bb44ef7c",
+        "name": "Centre St & Chambers St",
+        "short_name": "5207.01",
+        "lon": -74.0046073,
+        "lat": 40.71273266,
+        "region_id": "71",
+        "capacity": 57,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "66db3898-0aca-11e7-82f6-3863bb44ef7c",
+        "name": "Spruce St & Nassau St",
+        "short_name": "5137.10",
+        "lon": -74.00552427,
+        "lat": 40.71146364,
+        "region_id": "71",
+        "capacity": 34,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "66db90f1-0aca-11e7-82f6-3863bb44ef7c",
+        "name": "Reade St & Broadway",
+        "short_name": "5247.10",
+        "lon": -74.00562789,
+        "lat": 40.71450451,
+        "region_id": "71",
+        "capacity": 62,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "18fcd2c1-dc8b-4a52-9f18-e9b9003bbea5",
+        "name": "Park Pl & Church St",
+        "short_name": "5288.08",
+        "lon": -74.00935515761375,
+        "lat": 40.71334184275907,
+        "region_id": "71",
+        "capacity": 54,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "6f484a9d-c535-451e-a18f-f3afdc0a27af",
+        "name": "Gold St & Frankfort St",
+        "short_name": "5137.12",
+        "lon": -74.00354147,
+        "lat": 40.71069995,
+        "region_id": "71",
+        "capacity": 40,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "66db3053-0aca-11e7-82f6-3863bb44ef7c",
+        "name": "Warren St & W Broadway",
+        "short_name": "5288.09",
+        "lon": -74.00910627,
+        "lat": 40.71473993,
+        "region_id": "71",
+        "capacity": 71,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "29ced315-14b5-4edc-bef2-665316dfe3dd",
+        "name": "W 12 St & Hudson St",
+        "short_name": "5997.10",
+        "lon": -74.00558933615685,
+        "lat": 40.73752993301071,
+        "region_id": "71",
+        "capacity": 45,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "2235294222661977076",
+        "name": "Livonia Ave & Powell St",
+        "short_name": "3678.05",
+        "lon": -73.90231,
+        "lat": 40.66363,
+        "region_id": "71",
+        "capacity": 0,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      },
+      {
+        "station_id": "06439006-11b6-44f0-8545-c9d39035f32a",
+        "name": "Vesey St & Church St",
+        "short_name": "5216.06",
+        "lon": -74.01047229766846,
+        "lat": 40.71221958009051,
+        "region_id": "71",
+        "capacity": 78,
+        "rental_uris": {
+          "android": "https://bkn.lft.to/lastmile_qr_scan",
+          "ios": "https://bkn.lft.to/lastmile_qr_scan"
+        },
+        "is_charging": false
+      }
+    ]
+  },
+  "last_updated": 1792426999,
+  "ttl": 60,
+  "version": "2.3"
+}

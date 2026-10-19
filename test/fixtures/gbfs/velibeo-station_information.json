@@ -1,0 +1,111 @@
+{
+  "data": {
+    "stations": [
+      {
+        "capacity": 5,
+        "is_valet_station": false,
+        "is_virtual_station": false,
+        "lat": 45.159403,
+        "lon": 1.533573,
+        "name": [
+          {
+            "language": "fr",
+            "text": "Mairie de Brive"
+          }
+        ],
+        "rental_uris": {
+          "web": "https://velibeo.ecovelo.mobi/#/station/stn_7NLUAv4sBXRzsEikCGScXZ"
+        },
+        "station_id": "stn_7NLUAv4sBXRzsEikCGScXZ"
+      },
+      {
+        "capacity": 18,
+        "is_valet_station": false,
+        "is_virtual_station": false,
+        "lat": 45.160418,
+        "lon": 1.530081,
+        "name": [
+          {
+            "language": "fr",
+            "text": "D'Arsonval"
+          }
+        ],
+        "rental_uris": {
+          "web": "https://velibeo.ecovelo.mobi/#/station/stn_h8x3xcXATrrvvE2ie367pK"
+        },
+        "station_id": "stn_h8x3xcXATrrvvE2ie367pK"
+      },
+      {
+        "capacity": 14,
+        "is_valet_station": false,
+        "is_virtual_station": false,
+        "lat": 45.156389,
+        "lon": 1.533286,
+        "name": [
+          {
+            "language": "fr",
+            "text": "Halle Gaillarde"
+          }
+        ],
+        "rental_uris": {
+          "web": "https://velibeo.ecovelo.mobi/#/station/stn_haXqCqZLZmdkRpVkde3inN"
+        },
+        "station_id": "stn_haXqCqZLZmdkRpVkde3inN"
+      },
+      {
+        "capacity": 5,
+        "is_valet_station": false,
+        "is_virtual_station": false,
+        "lat": 45.157009,
+        "lon": 1.528047,
+        "name": [
+          {
+            "language": "fr",
+            "text": "Zola"
+          }
+        ],
+        "rental_uris": {
+          "web": "https://velibeo.ecovelo.mobi/#/station/stn_VHKU3FgD69amvpXLwFZQh5"
+        },
+        "station_id": "stn_VHKU3FgD69amvpXLwFZQh5"
+      },
+      {
+        "capacity": 18,
+        "is_valet_station": false,
+        "is_virtual_station": false,
+        "lat": 45.16234,
+        "lon": 1.53406,
+        "name": [
+          {
+            "language": "fr",
+            "text": "Guierle"
+          }
+        ],
+        "rental_uris": {
+          "web": "https://velibeo.ecovelo.mobi/#/station/stn_ebSvjfxGbSygotjea8SWw2"
+        },
+        "station_id": "stn_ebSvjfxGbSygotjea8SWw2"
+      },
+      {
+        "capacity": 18,
+        "is_valet_station": false,
+        "is_virtual_station": false,
+        "lat": 45.160769,
+        "lon": 1.54059,
+        "name": [
+          {
+            "language": "fr",
+            "text": "Piscine"
+          }
+        ],
+        "rental_uris": {
+          "web": "https://velibeo.ecovelo.mobi/#/station/stn_gY7GaY9SYQxW7e2Sokh9gw"
+        },
+        "station_id": "stn_gY7GaY9SYQxW7e2Sokh9gw"
+      }
+    ]
+  },
+  "last_updated": "2026-10-19T18:20:58+02:00",
+  "ttl": 0,
+  "version": "3.0"
+}

@@ -1,0 +1,58 @@
+{
+  "last_updated": "2026-10-19T15:33:10.680394479Z",
+  "ttl": 3600,
+  "version": "3.0",
+  "data": {
+    "system_id": "nantes",
+    "languages": ["fr", "en"],
+    "name": [
+      {
+        "text": "Naolib",
+        "language": "fr"
+      },
+      {
+        "text": "Naolib",
+        "language": "en"
+      }
+    ],
+    "opening_hours": "Mo-Su,PH 00:00-24:00",
+    "url": "https://velo.naolib.fr/",
+    "purchase_url": "https://velo.naolib.fr/fr/offers/groups",
+    "email": "naolib.velo@contact.jcdecaux.com",
+    "feed_contact_email": "developer@jcdecaux.com",
+    "timezone": "Europe/Paris",
+    "license_url": "https://developer.jcdecaux.com/files/Open-Licence-fr.pdf",
+    "terms_url": [
+      {
+        "text": "https://velo.naolib.fr/fr/documents/cgau/vls",
+        "language": "fr"
+      },
+      {
+        "text": "https://velo.naolib.fr/en/documents/cgau/vls",
+        "language": "en"
+      }
+    ],
+    "terms_last_updated": "2026-01-01",
+    "privacy_url": [
+      {
+        "text": "https://velo.naolib.fr/fr/legal-information/privacy-policy",
+        "language": "fr"
+      },
+      {
+        "text": "https://velo.naolib.fr/en/legal-information/privacy-policy",
+        "language": "en"
+      }
+    ],
+    "privacy_last_updated": "2024-05-24",
+    "rental_apps": {
+      "android": {
+        "store_uri": "https://play.google.com/store/apps/details?id=com.jcdecaux.vls.nantes",
+        "discovery_uri": "com.jcdecaux.vls.nantes://"
+      },
+      "ios": {
+        "store_uri": "https://itunes.apple.com/app/id1414197331",
+        "discovery_uri": "com.jcdecaux.vls.nantes://"
+      }
+    }
+  }
+}

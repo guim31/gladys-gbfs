@@ -1,0 +1,113 @@
+{
+  "lastUpdatedOther": 1792426901,
+  "ttl": 3600,
+  "data": {
+    "stations": [
+      {
+        "station_id": 98187918,
+        "stationCode": "4016",
+        "name": "Lobau - Hôtel de Ville",
+        "lat": 48.8562118,
+        "lon": 2.3532536,
+        "capacity": 60,
+        "rental_methods": ["CREDITCARD"],
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 48800374,
+        "stationCode": "4017",
+        "name": "Place de l'Hôtel de Ville",
+        "lat": 48.8573314,
+        "lon": 2.351458,
+        "capacity": 14,
+        "rental_methods": ["CREDITCARD"],
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 128880156,
+        "stationCode": "4103",
+        "name": "Archives - Rivoli",
+        "lat": 48.857346707443,
+        "lon": 2.3539767041802,
+        "capacity": 25,
+        "rental_methods": ["CREDITCARD"],
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 6352,
+        "stationCode": "4018",
+        "name": "Saint-Bon - Rivoli",
+        "lat": 48.857999643315,
+        "lon": 2.3502172809763,
+        "capacity": 31,
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 54000543,
+        "stationCode": "4019",
+        "name": "Cloître Saint-Merri - Renard",
+        "lat": 48.858835448898,
+        "lon": 2.3518279194832,
+        "capacity": 32,
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 100767550,
+        "stationCode": "4015",
+        "name": "Mairie du 4ème",
+        "lat": 48.855949910497,
+        "lon": 2.3563823103905,
+        "capacity": 44,
+        "rental_methods": ["CREDITCARD"],
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 84958519,
+        "stationCode": "4001",
+        "name": "Arcole - Notre-Dame",
+        "lat": 48.853883541328,
+        "lon": 2.3493797332048,
+        "capacity": 14,
+        "rental_methods": ["CREDITCARD"],
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 6294,
+        "stationCode": "4002",
+        "name": "Marché aux fleurs",
+        "lat": 48.855258115391,
+        "lon": 2.3473754525185,
+        "capacity": 23,
+        "rental_methods": ["CREDITCARD"],
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 213688169,
+        "stationCode": "16107",
+        "name": "Benjamin Godard - Victor Hugo",
+        "lat": 48.865983,
+        "lon": 2.275725,
+        "capacity": 35,
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 21584689525,
+        "stationCode": "18501",
+        "name": "Station Tour de France",
+        "lat": 48.883291,
+        "lon": 2.334151,
+        "capacity": 200,
+        "station_opening_hours": null
+      },
+      {
+        "station_id": 21797308904,
+        "stationCode": "60002",
+        "name": "Concorde - Place de la Madeleine",
+        "lat": 48.870620950552,
+        "lon": 2.3242199480542,
+        "capacity": 409,
+        "station_opening_hours": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "ttl": 0,
+  "version": "2.3",
+  "data": {
+    "stations": [
+      {
+        "name": "Rihour",
+        "capacity": 32,
+        "station_id": "10",
+        "lat": 50.63589,
+        "lon": 3.062471,
+        "post_code": "59000",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Opera",
+        "capacity": 25,
+        "station_id": "12",
+        "lat": 50.637486,
+        "lon": 3.065902,
+        "post_code": "59000",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Nouveau siecle",
+        "capacity": 32,
+        "station_id": "11",
+        "lat": 50.63734,
+        "lon": 3.060977,
+        "post_code": "59000",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Tanneurs",
+        "capacity": 36,
+        "station_id": "27",
+        "lat": 50.635014,
+        "lon": 3.064802,
+        "post_code": "59000",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Rue des Arts",
+        "capacity": 18,
+        "station_id": "23",
+        "lat": 50.639107,
+        "lon": 3.065767,
+        "post_code": "59000",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Hopital Militaire",
+        "capacity": 16,
+        "station_id": "164",
+        "lat": 50.63393,
+        "lon": 3.061687,
+        "post_code": "59000",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Metropole Europeenne de Lille (CB)",
+        "capacity": 36,
+        "station_id": "1",
+        "lat": 50.641926,
+        "lon": 3.075992,
+        "post_code": "59000",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Jean Moulin",
+        "capacity": 15,
+        "station_id": "204",
+        "lat": 50.684757,
+        "lon": 3.171974,
+        "post_code": "59100",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      },
+      {
+        "name": "Gustave Delory",
+        "capacity": 18,
+        "station_id": "211",
+        "lat": 50.674197,
+        "lon": 3.174583,
+        "post_code": "59100",
+        "parking_type": "street_parking",
+        "parking_hoop": true,
+        "is_virtual_station": false
+      }
+    ]
+  },
+  "last_updated": 1792426922
+}
