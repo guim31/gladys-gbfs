@@ -8,8 +8,8 @@
     "de": "Räder und freie Plätze deiner Leihrad-Stationen: Vélib', Citi Bike, Villo!… (offene GBFS-Daten).",
     "es": "Bicis y anclajes libres de sus estaciones de bici compartida: BiciMAD, Vélib'… (datos GBFS)."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-gbfs:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-gbfs:1.0.1",
   "gladys_version": ">=5.2.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-gbfs/main/cover.png",
   "categories": ["services"],

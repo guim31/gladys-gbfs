@@ -1,6 +1,6 @@
 {
   "name": "gladys-gbfs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Gladys Assistant integration: bikes and free docks of any bike sharing station published in the GBFS open standard.",
   "type": "module",
